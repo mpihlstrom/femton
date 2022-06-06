@@ -10,6 +10,8 @@ Crucial for the realization of a manipulable triangulation is the avoidance of i
 
 https://user-images.githubusercontent.com/2462565/172197963-cff136c7-e16e-47b5-824d-3aeb6ca59165.mp4
 
+https://user-images.githubusercontent.com/2462565/172198906-9aa0b879-1630-4c28-bb6a-1803f68c6a71.mp4
+
 ![tumblr_530d76cd260b1cae7065b925ae708e3f_c2a01d72_1280](https://user-images.githubusercontent.com/2462565/172197979-416f872c-b5e1-4392-9c47-e64fe25c1e32.jpg)
 
 ![200122-121850](https://user-images.githubusercontent.com/2462565/172198228-c9f4d12a-72bf-4b69-bafb-dc104a54bc2f.jpg)
