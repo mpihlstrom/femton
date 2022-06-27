@@ -8,9 +8,9 @@ One of the main concerns and challenges of this project has been robustness. Spe
 
 ## The principle of minimal edge disruption [draft]
 
-[This principle is best explained with images and animation. Should I embrace multimedia exposition? But then what's the point in speaking at all? ... There is a point of course. It's a mistake to believe in the one ultimate explanation, just as there's not just one way to prove a mathematical theorem. Probably mathematics itself is always-already a point-of-view in the making. The Truth need no formulations, let's keep in mind.]
+[This principle is best explained with images and animation. Should I embrace multimedia exposition? But then what's the point in speaking at all? ... There is a point of course. It's a mistake to believe in the one ultimate explanation, just as there's not just one way to prove a mathematical theorem. Probably mathematics itself is always-already a point-of-view in the making. The Truth needs no formulations, let's keep in mind.]
 
-[I don't like the wordy "principle of minimal edge disruption". I don't like the name "edge semantic re-triangulation" that much either; it is too generic and doesn't capture the visual bearing. I am also not sure how to anchor the notions and whether they should even co-exist in the same exposition: they are related but not the same, and I'm not sure what is the proper vantage point. I don't know my audience. Even if I stay true to the idea of targetting myself, then -- who am I?]
+[I don't like the wordy "principle of minimal edge disruption". I don't like the name "edge semantic re-triangulation" that much either; it is too generic and doesn't capture the visual bearing. I am also not sure how to anchor the notions and whether they should even co-exist in the same exposition: they are related but not the same, and I'm not sure what is the proper vantage point. I don't know my audience. Even if I stay true to the idea of targeting myself, then -- who am I?]
 
 ## The algorithm [draft]
 
