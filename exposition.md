@@ -1,4 +1,4 @@
-[The LaTeX support in GitHub markdown is a great initiative but it's not working properly, for me. It looks good in my editor (Visual Studio Code + plugins). I'm left a bit paralized.]
+[The LaTeX support in GitHub markdown is a great initiative but it's not working properly, for me. It looks good in my editor (Visual Studio Code + plugins). I'm left a bit paralyzed.]
 
 # Edge semantic re-triangulation: a technical exposition
 
