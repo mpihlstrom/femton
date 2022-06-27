@@ -16,7 +16,7 @@ One of the main concerns and challenges of this project has been robustness. Spe
 
 #### 1st level abstraction
 
-Continously progress along the time line until some triangle becomes collinear at time t'. Resolve the planar violation by flipping the appropriate edge of the triangle. The mesh state at time t' is now be a proper triangulation. Via induction the process can be repeated from [t', 1] until t' = 1, at which point all vertices have now moved to their new position and the mesh is a triangulation.
+Continuously progress along the time line until some triangle becomes collinear at time t'. Resolve the planar violation by flipping the appropriate edge of the triangle. The mesh state at time t' is now be a proper triangulation. Via induction the process can be repeated from [t', 1] until t' = 1, at which point all vertices have now moved to their new position and the mesh is a triangulation.
 
 #### 2nd level of abstraction
 
