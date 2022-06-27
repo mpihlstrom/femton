@@ -18,4 +18,6 @@ https://user-images.githubusercontent.com/2462565/172198906-9aa0b879-1630-4c28-b
 
 ## Additional resources
 
-A project blog has been kept at [femton15.tumblr.com](http://femton15.tumblr.com).
+* A technical exposition of the algorithm is found in [exposition.md](exposition.md).
+
+* A project blog has been kept at [femton15.tumblr.com](http://femton15.tumblr.com).
