@@ -1,3 +1,5 @@
+[The LaTeX support in GitHub markdown is a great initiative but it's not working properly, for me. It looks good in my editor (Visual Studio Code + plugins). I'm left a bit paralized.]
+
 # Edge semantic re-triangulation: a technical exposition
 
 This text primarily serves as a memorandum for myself, a documentation of the mathematical formulas used in this project and the outlining motivation for them. As such, the ambition has not been an exahustive description of the algorithmic content.
