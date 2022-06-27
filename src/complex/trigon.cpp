@@ -215,9 +215,13 @@ Tri::Cross* Tri::create_cross(Tri::Cross* curcr)
     auto rootneg_root_t1 = root(-1) - root_t1;
     auto rootpos_root_t1 = root( 1) - root_t1;
 
-    if((root(-1) - root_t0 < 0 || rootneg_root_t1 > 0) && (root(1) - root_t0 < 0 || rootpos_root_t1 > 0))
+    // if neither root is in [0,1] return null
+    if((root(-1) - root_t0 < 0 || rootneg_root_t1 > 0) &&
+       (root( 1) - root_t0 < 0 || rootpos_root_t1 > 0))
         return nullptr;
 
+    // if min root is in [t, 1], choose this root, else
+    // if max root is in [t, 1], choose that root, else return null
     if((root(-1) - *curcrossroot >= 0) && (rootneg_root_t1 <= 0))
         root(-1); else
     if((root( 1) - *curcrossroot >= 0) && (rootpos_root_t1 <= 0))
