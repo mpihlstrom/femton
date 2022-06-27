@@ -4,7 +4,49 @@ This text primarily serves as a memorandum for myself, a documentation of the ma
 
 One of the main concerns and challenges of this project has been robustness. Specifically, much effort was put into treating concepts which are easily expressed with real numbers but which do not hold up in a software settting if implemented simply and naively with floating point representation. One major theme therefore has been to expand and transform real number expressions into a semi-algorithmic form with conditionals and (big) integers only. During development the slightest error in these formulas would typically result in a totally dysfunctional system. Because of this, not least, it seemed prudent to at some point and in some fashion expose parts of the more important but perhaps not so obvious trails leading up to the final implementation, before they are forgotten. Somewhat ironically, the code itself remains the definite exposition, albeit arcane, as any errors will have likely manifested in crashes and been corrected along the way. Though I'd like to imagine the algorithm is correct in a formal sense, this has far from been proved. Hopefully the reasoning presented here can be used as support for at least some notion of conviction that this is indeed the case.
 
+## The principle of minimal edge disruption [draft]
+
+[This principle is best explained with images and animation. Should I embrace multimedia exposition? But then what's the point in speaking at all? ... There is a point of course. It's a mistake to believe in the one ultimate explanation, just as there's not just one way to prove a mathematical theorem. Probably mathematics itself is always-already a point-of-view in the making. The Truth need no formulations, let's keep in mind.]
+
+[I don't like the wordy "principle of minimal edge disruption". I don't like the name "edge semantic re-triangulation" that much either; it is too generic and doesn't capture the visual bearing. I am also not sure how to anchor the notions and whether they should even co-exist in the same exposition: they are related but not the same, and I'm not sure what is the proper vantage point. I don't know my audience. Even if I stay true to the idea of targetting myself, then -- who am I?]
+
+## The algorithm [draft]
+
+#### 1st level abstraction
+
+Continously progress along the time line until some triangle becomes collinear at time t'. Resolve the planar violation by flipping the appropriate edge of the triangle. The mesh state at time t' is now be a proper triangulation. Via induction the process can be repeated from [t', 1] until t' = 1, at which point all vertices have now moved to their new position and the mesh is a triangulation.
+
+#### 2nd level of abstraction
+
+For all triangles, calculate the t' (if any) when the triangle is collinear and calculate what edge at this t' needs to be flipped. Sort the triangles in a list by t' in ascending order. Pop and flip the first triangle. Since the topology of the flipped triangle pair is changed, the t' values for these triangles need to be re-calculated and the sorting updated. Continue popping and flipping until the list is empty.
+
+#### 3rd level abstraction
+
+* //init stage
+* set q = 0 
+* create heap H (sorted by ascending values of t')
+* **for** all triangles T:
+  * calculate the smallest collinear t' for T such that t' > q and  t' <= 1
+  * **if** t' exists:
+    * determine the intersected edge(s) at t'
+    * push T to H sorted on t'
+
+* // main loop
+* **while** H is not empty
+  * extract the top T in H (smallest t')
+  * **if** all three vertices of T are overlapping:
+    * recursively remove all neighboring triangles that are also have three overlapping vertices
+    * stitch the gap
+    * ...
+  * **else if** exactly two vertices are overlapping:
+    * remove the triangle pair given by the overlapping vertices
+    * stitch the gap
+  * 
+
+
 ## Planar violation calculations
+
+*[todo: maybe separate the semi-agorithmic big integer formulas to an appendix, since they are secondary for understanding the algorithm.]*
 
 Let $a$, $b$ and $c$ be the vertices of a triangle $\triangle abc$ and let the position of each vertex be parameterized by $t$ as follows.
 
@@ -327,3 +369,6 @@ A_\Delta C^2 -B_\Delta BC + C_\Delta B^2 \diamond 0
 $$
 
 Finally, we are also interested in determining degenerate cases when the collinear triangle has one or more overlapping vertices, that is, when some edge vector magnitude is 0. This can be checked by simply evaluating the expression $g_{\vec{ab}}(t') \diamond \vec{0}$.
+
+
+
