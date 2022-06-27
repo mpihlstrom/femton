@@ -1,4 +1,3 @@
-exposition/
 mpir.lib
 mpir.dll
 
@@ -19,9 +18,9 @@ femton.pro.user
 /_tidigare
 *.autosave
 
-/debug
-/release
-/out
+src/debug
+src/release
+src/out
 
 Makefile.Debug
 Makefile.Release
