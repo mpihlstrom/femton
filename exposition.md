@@ -48,17 +48,17 @@ For all triangles, calculate the t' (if any) when the triangle is collinear and 
 
 ## Planar violation calculations
 
-*[todo: maybe separate the semi-agorithmic big integer formulas to an appendix, since they are secondary for understanding the algorithm.]*
+[todo: maybe separate the semi-agorithmic big integer formulas to an appendix, since they are secondary for understanding the algorithm.]
 
-Let $a$, $b$ and $c$ be the vertices of a triangle $\triangle abc$ and let the position of each vertex be parameterized by $t$ as follows.
+Let a, b and c be the vertices of a triangle $ \triangle abc$ and let the position of each vertex be parameterized by $t$ as follows.
 
 $$p = p_t = p(t) = p_0(1-t) + p_1t = p_0 + t(p_1 - p_0)$$
 
-We want to determine the value(s) of $t$ when $\triangle abc$ intersects itself, that is, when the edge vectors are collinear. We also want to know which edge is intersected by an opposing vertex for such values of $t$. We can determine that by finding the longest edge.
+We want to determine the value(s) of t when $\triangle abc$ intersects itself, that is, when the edge vectors are collinear. We also want to know which edge is intersected by an opposing vertex for such values of t. We can determine that by finding the longest edge.
 
 ### The collinear triangle
 
-We recall that two vectors are collinear iff the determinant of the $2 \times 2$ matrix they form is 0. Let's introduce a short-hand notation, the binary operation $\wedge$.
+We recall that two vectors are collinear iff the determinant of the 2 by 2 matrix they form is 0. Let's introduce a short-hand notation, the binary operation $\wedge$.
 
 $$
 \vec{u} \wedge \vec{v} := 
@@ -131,7 +131,7 @@ $$
 t = -\frac{B}{2A} \pm \sqrt{\left(\frac{B}{2A}\right)^2 - \frac{C}{A}}
 $$
 
-For convenience we express a single root $t'$ by parameterizing the $\pm$ sign with $s \in \{-1,0,1\}$. We also introduce the short-hand constants $P = \frac{B}{2A} $ and $Q = \frac{C}{A}$.
+For convenience we express a single root t' by parameterizing the +/- sign with s in {-1,0,1}. We also introduce the short-hand constants $P = \frac{B}{2A} $ and $Q = \frac{C}{A}$.
 
 $$
 t' = -P + s \sqrt{P^2 - Q}
@@ -150,8 +150,12 @@ $$
 
 and we will abbreviate expressions of the form $x \diamond 0$ as $s_x$.
 <p>
-We are interested in comparing $t'$ for two triangles ${\triangle abc}_f$ and ${\triangle abc}_s$. Let these be $t'_f$ and $t'_s$. We want to calculate $t'_f \diamond t'_s$. Because of computational constraints we cannot allow square roots and fractions in our expression. We can avoid these by expanding the expression and split it up in cases in the following (rather long-winding) way, beginning with the general case when $A_f \neq 0 \land A_s \neq 0 $.
+We are interested in comparing t' for two triangles. Let these be $t'_f$ and $t'_s$. We want to calculate $t'_f \diamond t'_s$. Because of computational constraints we cannot allow square roots and fractions in our expression. We can avoid these by expanding the expression and split it up in cases in the following (rather long-winding) way. Beginning with the general case when
+ 
+$$A_f \neq 0 \land A_s \neq 0 $$
 
+then
+ 
 $$
 t'_f \diamond t'_s = 
 $$
@@ -220,7 +224,11 @@ $$
 s_{L'} \left( C_f^2 A_s^2 + C_s^2 A_f^2 - 2C_fC_sA_fA_s - B_fB_sC_fA_s - B_fB_sC_sA_f + B_f^2C_sA_s + B_s^2C_fA_f \right) \diamond 0
 $$
 
-Next we cover the special case when $A_f = 0 \land B_f \neq 0 \land A_s \neq 0$. We have then that
+Next we cover the special case when 
+
+$$A_f = 0 \land B_f \neq 0 \land A_s \neq 0$$
+ 
+where
 
 $$
 f_f(t) = 0 \iff tB_f + C_f = 0 \iff t'_f = -\frac{C_f}{B_f}
@@ -270,11 +278,13 @@ $$
 (A_s \diamond 0 )s_L\left( C_f^2A_s - B_fB_sC_f + B_fB_sC_s \right) \diamond 0 
 $$
   
-Imaginary values of $t'$ will not be of interest and are skipped by checking if $A = 0 \land B = 0$ or if $B^2 - 4CA \ge 0 $.
+Imaginary values of t' will not be of interest and are skipped if the following formula holds true.
+ 
+$$(A = 0 \land B = 0) \lor (B^2 - 4CA \ge 0)$$
 
 ### The intersected edge
 
-To determine the longest edge in a triangle $\triangle abc$ it is sufficient to compare the square of their vector magnitudes. The dot product of a vector with itself can be refactored for $t$ in the same way as the previously introduced determinant operator. Note that $\vec{u}_0 \cdot \vec{u}_1 = \vec{u}_1 \cdot \vec{u}_0$ and that the matrix is compacted.
+To determine the longest edge in a triangle it is sufficient to compare the square of their vector magnitudes. The dot product of a vector with itself can be refactored for t in the same way as the previously introduced determinant operator. Note that $\vec{u}_0 \cdot \vec{u}_1 = \vec{u}_1 \cdot \vec{u}_0$ and that the matrix is compacted.
   
 $$ g(t) := \vec{u} \cdot \vec{u} = 
 \begin{bmatrix}
@@ -300,7 +310,11 @@ $$ g(t) := \vec{u} \cdot \vec{u} =
 \end{bmatrix}
 $$
   
-We want to determine the longest edge for some $t'$ when the edges are collinear. As before, we cannot allow square roots and fractions, so the expressions have to be expanded. Without loss of generality, we derive the formulas for the difference between the squared magnitudes of vectors $\vec{ab}$ and $\vec{bc}$, beginning with the general case when $A \neq 0$.
+We want to determine the longest edge for some t' when the edges are collinear. As before, we cannot allow square roots and fractions, so the expressions have to be expanded. Without loss of generality, we derive the formulas for the difference between the squared magnitudes of vectors $\vec{ab}$ and $\vec{bc}$. Beginning with the general case when
+ 
+ $$A \neq 0$$
+ 
+ we get the following formulas.
 
 $$
 g_{\vec{ab}}(t') \diamond g_{\vec{bc}}(t') =
