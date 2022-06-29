@@ -1,16 +1,12 @@
-[The LaTeX support in GitHub markdown is a great initiative but it's not working properly, for me. I have tried to adapt where the rendering is buggy.]
+[The LaTeX support in GitHub markdown is a great initiative but it's not working properly, for me. It's mainly the inline stuff which is buggy. I have tried to adapt, at some expense of coherence and legibility, unfortunately.]
 
 # Edge semantic re-triangulation: a technical exposition
+
+[Should I separate the semi-agorithmic big integer formulas to an appendix? since they are secondary for understanding the algorithm.]
 
 This text primarily serves as a memorandum for myself, a documentation of the mathematical formulas used in this project and the outlining motivation for them. As such, the ambition has not been an exahustive description of the algorithmic content.
 
 One of the main concerns and challenges of this project has been robustness. Specifically, much effort was put into treating concepts which are easily expressed with real numbers but which do not hold up in a software settting if implemented simply and naively with floating point representation. One major theme therefore has been to expand and transform real number expressions into a semi-algorithmic form with conditionals and (big) integers only. During development the slightest error in these formulas would typically result in a totally dysfunctional system. Because of this, not least, it seemed prudent to at some point and in some fashion expose parts of the more important but perhaps not so obvious trails leading up to the final implementation, before they are forgotten. Somewhat ironically, the code itself remains the definite exposition, albeit arcane, as any errors will have likely manifested in crashes and been corrected along the way. Though I'd like to imagine the algorithm is correct in a formal sense, this has far from been proved. Hopefully the reasoning presented here can be used as support for at least some notion of conviction that this is indeed the case.
-
-## The principle of minimal edge disruption [draft]
-
-[This principle is best explained with images and animation. Should I embrace multimedia exposition? But then what's the point in speaking at all? ... There is a point of course. It's a mistake to believe in the one ultimate explanation, just as there's not just one way to prove a mathematical theorem. Probably mathematics itself is always-already a point-of-view in the making. The Truth needs no formulations, let's keep in mind.]
-
-[I don't like the wordy "principle of minimal edge disruption". I don't like the name "edge semantic re-triangulation" that much either; it is too generic and doesn't capture the visual bearing. I am also not sure how to anchor the notions and whether they should even co-exist in the same exposition: they are related but not the same, and I'm not sure what is the proper vantage point. I don't know my audience. Even if I stay true to the idea of targeting myself, then -- who am I?]
 
 ## The algorithm [draft]
 
@@ -48,7 +44,7 @@ For all triangles, calculate the t' (if any) when the triangle is collinear and 
 
 ## Planar violation calculations
 
-[todo: maybe separate the semi-agorithmic big integer formulas to an appendix, since they are secondary for understanding the algorithm.]
+[todo: maybe move the big num stuff to a separate document]
 
 Let a, b and c be the vertices of a triangle $ \triangle abc$ and let the position of each vertex be parameterized by $t$ as follows.
 
@@ -310,7 +306,7 @@ $$ g(t) := \vec{u} \cdot \vec{u} =
 \end{bmatrix}
 $$
   
-We want to determine the longest edge for some t' when the edges are collinear. As before, we cannot allow square roots and fractions, so the expressions have to be expanded. Without loss of generality, we derive the formulas for the difference between the squared magnitudes of vectors $\vec{ab}$ and $\vec{bc}$. Beginning with the general case when
+We want to determine the longest edge for some t' when the edges are collinear. As before, we cannot allow square roots and fractions, so the expressions have to be expanded. Without loss of generality, we derive the formulas for the difference between the squared magnitudes of vectors ab and bc. Beginning with the general case when
  
  $$A \neq 0$$
  
