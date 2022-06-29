@@ -1,4 +1,4 @@
-[The LaTeX support in GitHub markdown is a great initiative but it's not working properly, for me. It looks good in my editor (Visual Studio Code + plugins). I'm left a bit paralyzed.]
+[The LaTeX support in GitHub markdown is a great initiative but it's not working properly, for me. I have tried to adapt where the rendering is buggy.]
 
 # Edge semantic re-triangulation: a technical exposition
 
@@ -370,7 +370,11 @@ $$
 s_L \left( \left( 2 A_\Delta B^2 - 4A_\Delta A C - 2B_\Delta AB + 4A^2 C_\Delta \right)^2  - (B^2 - 4AC)(2AB_\Delta - 2A_\Delta B)^2 \right) \diamond 0
 $$
 
-The special case when $A = 0 \land B \neq 0 $ reduces to a shorter formula, as follows.
+The special case when 
+
+$$A = 0 \land B \neq 0$$
+ 
+reduces to a shorter formula, as follows.
 
 $$
 g_{\vec{ab}}(t') \diamond g_{\vec{bc}}(t') =
