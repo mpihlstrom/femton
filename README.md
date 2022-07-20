@@ -4,9 +4,10 @@
 
 This project came about out of the impetus of exploring the triangulation for manipulable image represenation as an alternative to the traditional paradigm of pixel and vector graphics. In this conceptualization, an image is represented by colored triangles in a triangulation with movable vertices that can be inserted or removed to achieve adaptive resolution. By combining the neighborhood characteristic of the pixel grid with the free shape characteristic of polygons, a triangulation, along with proper re-triangulation, can be manipulated based on both the spatiality and the geometry of its visual elements, opening up for unique image transformations.
 
-For the realization of a manipulable triangulation it is necessary to handle the occurence of intersecting edges which violate the triangulation condition when vertices are moved. In such cases, it turns out, re-triangulation is always possible by "flipping" edges between specific triangle pairs. For image representation, an appropriate re-triangulation can be arrived at by flipping edges in a way that is visually nondisruptive. A central part of the software of this project is the implementation of an algorithm which, in accordance with a principle of visual retention, performs re-triangulation as though the vertices had moved synchronously in continuous linear trajectories to their new positions.
+![brush](https://user-images.githubusercontent.com/2462565/180416854-f2599de5-6221-4109-952a-8b3808c57ae2.gif) ![smooth](https://user-images.githubusercontent.com/2462565/180481763-19affa20-f9e5-4e65-a7ef-776ec027b16d.gif) ![roll2_](https://user-images.githubusercontent.com/2462565/180505881-c258d626-7392-43fa-bfb9-fc96751aac7b.gif)
 
-![git_flashes](https://user-images.githubusercontent.com/2462565/176651031-2104efcf-75ef-4fa0-b751-da3a71ee17d1.gif) ![git_roll](https://user-images.githubusercontent.com/2462565/176651130-aa8e58c6-ef8d-49ec-991c-462720e179b6.gif)
+
+For the realization of a manipulable triangulation it is necessary to handle the occurence of intersecting edges which violate the triangulation condition when vertices are moved. In such cases, it turns out, re-triangulation is always possible by "flipping" edges between specific triangle pairs. For image representation, an appropriate re-triangulation can be arrived at by flipping edges in a way that is visually nondisruptive. A central part of the software of this project is the implementation of an algorithm which, in accordance with a principle of visual retention, performs re-triangulation as though the vertices had moved synchronously in continuous linear trajectories to their new positions.
 
 ## Introduction
 
@@ -16,19 +17,15 @@ In an essential sense, the image representation of a static triangulation is une
 
 ### Contour and adaptive resolution
 
-Contour can be defined as a path of edges where triangles have uniform color along either side of the path but distinct color across the path. Contour is an important concept because it is, in some regard, the basic element of visual information and because as a delimiter of representation it establishes, among other things, something analogous to pixel resolution only more adaptive: Image regions with uniform color can be consituted by large triangles while regions with more visual detail must be constituted by smaller triangles. The limit in detail, just like with a pixel raster, is ultimately determined by the size of the smallest line edge unit.
+Contour can be defined as a path of edges where triangles have uniform color along either side of the path but distinct color across the path. Contour is an important concept because it is, in some regard, the basic element of visual information and because as a delimiter of representation it establishes, among other things, something analogous to pixel resolution only more adaptive: Image regions with uniform color can be consituted by large triangles while regions with more visual detail must be constituted by smaller triangles. The limit in detail, just like with a pixel raster, is ultimately determined by the size of the smallest contour edge unit.
 
-[show image example of adaptive resolution]
+![adaptive](https://user-images.githubusercontent.com/2462565/180307109-54b144eb-5e24-498d-9965-6e15350a1f75.png)
 
 ### Moving vertices
 
 In the general case, when an edge is flipped, the visual impression of the triangulation will change because no reassignment of triangle colors can prevent contour from being disrupted. But in the case when an edge is flipped precisely at the incident of vertex interesection, and if the colors are reassigned in the proper way, contour will indeed remain the same before and after flipping. The principle of visual retention therefore suggests that edges should be flipped only when a vertex intersects it.
 
-[show an image of a flip when not precisely intersecting]
-
-![cpt2](https://user-images.githubusercontent.com/2462565/177141323-4331ee1c-da3a-4222-96c2-c72abe1d7f80.png)
-
-[todo: create a new and better illustration]
+![flip_](https://user-images.githubusercontent.com/2462565/180372075-0bd6cf65-8d3e-4e38-962a-9111fd827604.gif) ![flip3](https://user-images.githubusercontent.com/2462565/180336545-fa470595-a978-44ef-96a6-c793ce9f47e2.gif)
 
 In turn, in what order to flip edges also becomes a matter subsumed by the principle of visual retention. One intuitive order is given by treating vertices as moving synchronously along linear trajectories through time. An inductive method for re-triangulation can then be outlined: *Progress along the time line until some first triangle is intersected at some time t' and resolve the violation by flipping. The collection of triangles at t' is now a triangulation. Repeat the process progressing from t' and continue repeating until all vertices have moved to their new positions. The re-triangulation is now complete.* 
 
@@ -38,7 +35,7 @@ More details about the re-triangulation algorithm are described [elsewhere](expo
 
 ### Removing vertices
 
-The removal of a vertex from a triangulation necessarily prompts, and must coincide with, some form of re-triangulation. Incidentally, the removal of a vertex is also a solution to the corner case problem that vertices can become precisely superposed during the re-triangulation induced by moving vertices. The apparatus of removing a vertex can therefore be delegated by simply moving the vertex so that it superposes a neighbor vertex.
+The removal of a vertex from a triangulation necessarily prompts some form of re-triangulation. Incidentally, the removal of a vertex is also a solution to the corner case problem that vertices can become precisely superposed when re-triangulating moving vertices. The apparatus of removing a vertex can therefore be delegated by simply moving the vertex so that it superposes a neighbor vertex.
 
 A typical application of vertex removal is removing those representationally redundant vertices whose adjacent triangles is of the same color.
 
@@ -48,12 +45,9 @@ A typical application of vertex removal is removing those representationally red
 
 For a manipulable triangulation representation to exhibit basic capabilities for drawing, design and indeed image reproduction, there should be a way to support visual detail by introducing more vertices and triangles. Notably, this can be done such that the visual impression is retained if a triangle is split and the colors are assigned in the obvious way.
 
-![split](https://user-images.githubusercontent.com/2462565/179363149-da2a4fb8-5c46-4e77-b338-8f2cf44e0eed.png)
-
-
 The applicability of triangle splitting during manipulation is demonstrated in the simple mechanic where contour edges that exceed some threshold length are continuously split.
 
-![refract2](https://user-images.githubusercontent.com/2462565/179385114-5fa6f233-335b-4615-a419-97b572f94db5.gif)
+![split](https://user-images.githubusercontent.com/2462565/180255443-846e5f72-0f0b-46ad-b97f-765df25eaf74.gif) ![refract2](https://user-images.githubusercontent.com/2462565/179385114-5fa6f233-335b-4615-a419-97b572f94db5.gif)
 
 ### Color gradients and smooth contour
 
@@ -66,6 +60,10 @@ Seeing how the triangulation is, after all, a triangle mesh, a natural question 
 One should bare in mind that shading techniques amount to post-processing on rasterized renders. Importantly, the visual impression created by the shader is in the end based on the underlying tirangulation and is always merely a recasting of this information in a, perhaps, more pleasing way. The two-way interaction between the shader rasterizations and the triangulation representation is as of yet a much unexplored topic -- in so far it concerns the narrow scope of this project.
 
 ## Screenshots
+
+![tumblr_4433e08e2f6b4087167ec823fbc00a08_cc0f846d_1280](https://user-images.githubusercontent.com/2462565/180423962-11adf262-d10b-4810-b828-6812a2005730.jpg)
+
+![git_flashes](https://user-images.githubusercontent.com/2462565/176651031-2104efcf-75ef-4fa0-b751-da3a71ee17d1.gif) ![out](https://user-images.githubusercontent.com/2462565/180302797-72d971ea-a3a1-406d-9bfe-262af9587275.gif)
 
 https://user-images.githubusercontent.com/2462565/176846043-6d02d548-be18-4a62-948f-526be59c24ca.mp4
 
