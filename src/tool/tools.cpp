@@ -494,8 +494,9 @@ void Selecttool::motion(Vec2 rel) {
         case Class::Class_node: {
                 Node& n = *(Node*)selected;
                 Vec2 mv = view->scr_can_v(rel);
-                //com->move(n, n.pos + mv);
-                n.cp += mv;
+                com->move(n, n.cp + mv);
+                com->move_nodes();
+                //n.cp += mv;
                 break;
             }
         case Class::Class_trigon:

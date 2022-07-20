@@ -344,6 +344,8 @@ void Window::keyPressEvent(QKeyEvent *e) {
     draw->update();
 }
 
+int frame = 1;
+
 bool Graphics::event(QEvent *event) {
     switch(event->type()) {
     case QEvent::Wheel: {
@@ -387,6 +389,7 @@ bool Graphics::event(QEvent *event) {
         break;
     case QEvent::HoverMove: {
             hover_mouse_event((QHoverEvent*)event);
+            //if(Brush::left) ::window->dump_canvas2(std::to_string(++frame));
             break;
         }
     default:

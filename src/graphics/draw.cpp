@@ -48,6 +48,20 @@ Control_net_render::Control_net_render(QOpenGLBuffer* pbuffer) : Base_render(pbu
     program = new Shader_program("graphics/shaders/controlnet/vertex.glsl","","","", "graphics/shaders/controlnet/fragment.glsl");
 }
 
+Col node_color(Node* n) {
+    if(n->type == Node::Padding) return Col::Black;
+    Col nac;
+    int count = 0;
+    for(auto e : *n) {
+        if(e->t->label(e) == Tri::A) nac += Col::Red;
+        if(e->t->label(e) == Tri::B) nac += Col::Green;
+        if(e->t->label(e) == Tri::C) nac += Col::Blue;
+        ++count;
+    }
+    nac /= count;
+    return nac;
+}
+
 void Surface_render::set_buffer() {
     std::vector<G::Tri_patch> patches;
 
@@ -64,6 +78,12 @@ void Surface_render::set_buffer() {
         auto na = t.a.n->entry()->t->color;
         auto nb = t.b.n->entry()->t->color;
         auto nc = t.c.n->entry()->t->color;
+
+        na = node_color(t.a.n);
+        nb = node_color(t.b.n);
+        nc = node_color(t.c.n);
+
+        auto cea = Col::Red; auto ceb = Col::Green; auto cec = Col::Blue;
 
         /*if(&t.a == flipped_e || &t.b == flipped_e || &t.c == flipped_e) tc = Col::Black;
         if(&t.a == flipped_j || &t.b == flipped_j || &t.c == flipped_j) tc = Col::White;
@@ -95,8 +115,8 @@ void Edges_render::set_buffer() {
 
         //auto cea = t.na().entry()->t->color; auto ceb = t.nb().entry()->t->color; auto cec = t.nc().entry()->t->color;
         //auto cea = t.color; auto ceb = t.color; auto cec = t.color;
-        //auto cea = Col::Red; auto ceb = Col::Green; auto cec = Col::Blue;
-        auto cea = Col::Gray; auto ceb = Col::Gray; auto cec = Col::Gray;
+        auto cea = Col::Red; auto ceb = Col::Green; auto cec = Col::Blue;
+        //auto cea = Col::Gray; auto ceb = Col::Gray; auto cec = Col::Gray;
 
         edges.push_back(G::Edge(t.id, G::Vec3(t.na().ppcp(curt)), cea, 0, tri, G::Vec3(t.ea().w, t.eb().w, t.ec().w), G::Vec3(t.na().w(),t.nb().w(), t.nc().w())));
         edges.push_back(G::Edge(t.id, G::Vec3(t.nb().ppcp(curt)), ceb, 1, tri, G::Vec3(t.ea().w, t.eb().w, t.ec().w), G::Vec3(t.na().w(),t.nb().w(), t.nc().w())));

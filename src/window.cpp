@@ -146,7 +146,7 @@ Window::Window() {
     buttons->addWidget(button_colorpicker);
     group_tool->addButton(button_colorpicker);
 
-    QPushButton* button_selecttool = new QPushButton("pincer");
+    QPushButton* button_selecttool = new QPushButton("pincers");
     connect(button_selecttool, &QPushButton::clicked, this, [this]{ set_tool(&selecttool); });
     button_selecttool->setShortcut(QKeySequence(Qt::Key_X));
     group_tool->addButton(button_selecttool);
@@ -273,7 +273,7 @@ void Window::new_canvas()
     }
     com->randomize();*/
 
-    for(int k = 0; k < 30; ++k) {
+    for(int k = 0; k < 53; ++k) {
         int i = rand() % tris.size();
         Vec3 ru3(rand_uni(),rand_uni(),rand_uni());
         Vec2 ru = Vec2(Vec3(1.0)/3.0);
