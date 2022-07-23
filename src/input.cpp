@@ -137,6 +137,7 @@ void Window::keyReleaseEvent(QKeyEvent *e) {
 }
 
 bool stop = false;
+int frame = 1;
 
 void Window::keyPressEvent(QKeyEvent *e) {
     switch(e->key()) {
@@ -333,6 +334,7 @@ void Window::keyPressEvent(QKeyEvent *e) {
         break;
 
     case Qt::Key_F10:
+        frame = 1;
         load_file(get_QLineEdit_string(save_name));
         break;
 
@@ -344,7 +346,7 @@ void Window::keyPressEvent(QKeyEvent *e) {
     draw->update();
 }
 
-int frame = 1;
+
 
 bool Graphics::event(QEvent *event) {
     switch(event->type()) {
@@ -389,7 +391,11 @@ bool Graphics::event(QEvent *event) {
         break;
     case QEvent::HoverMove: {
             hover_mouse_event((QHoverEvent*)event);
-            //if(Brush::left) ::window->dump_canvas2(std::to_string(++frame));
+            if(false)//(Brush::left || Brush::right)
+            {
+                com->automata();
+                ::window->dump_canvas2(std::to_string(frame++));
+            }
             break;
         }
     default:

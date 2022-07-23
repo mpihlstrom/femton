@@ -274,7 +274,41 @@ bool Complex::automata()
     color_to_line();
     create_ccs();
 
-    /*
+
+    for(auto n : ns) {
+        if(n->type != Node::Floating) continue;
+        Vec2 v;
+        int count = 0;
+        double wsum = 0.0;
+
+        count = 0;
+        for(auto e : *n) {
+            if(e->line()) ++count;
+        }
+
+        if(count <= 1) continue;
+
+        for(auto e : *n) {
+            if(!e->line()) continue;
+            Edge* f = e->snxt();
+            for(; f != e; f = f->snxt()) {
+                if(f->line()) continue;
+
+                double w = (1.0 - (e->v().unit() & f->v().unit()))*0.5;
+                //if(!e->line()) w = pow(w,0.21);
+                wsum += w;//
+                v += (f->v() + e->v())*w;
+                break;
+            }
+        }
+
+        //v.norm(); v *= com->ev_quant * 0.25;
+        v /= wsum; v *= 0.5;
+
+        move(*n, n->cp + v);
+    }
+
+/*
     for(auto cc : com->ccs) {
         auto col = Col::random();
         for(auto t : cc->ts) {
@@ -289,8 +323,10 @@ bool Complex::automata()
             }
         }
         move_nodes();
-    }*/
+    }
+*/
 
+    /*
     for(auto n : ns) {
         if(n->type != Node::Floating) continue;
         Vec2 v;
@@ -321,8 +357,10 @@ bool Complex::automata()
     }
 
     for(auto n : ns) move(*n, n->cp + n->v);
+    */
 
-    /*
+
+/*
     for(auto n : ns) {
         //if(n->type == Node::Padding) n->v = 0;//continue;
         if(n->type == Node::Corner || n->type == Node::Padding) n->v = 0;//continue;
@@ -352,40 +390,6 @@ bool Complex::automata()
 
     for(auto n : ns) move(*n, n->cp + n->v);
 */
-
-/*
-    for(auto n : ns) {
-        //if(n->type != Node::Floating) continue;
-        Vec2 v;
-        int count = 0;
-        double wsum = 0.0;
-        for(auto e : *n) {
-            if(e->line()) {
-                for(auto f = e->snxt(); f != e; f = f->snxt()) {
-                //for(Node::iterator ff = Node::iterator(e->snxt()); ff != Node::iterator(e); ++ff) {
-                    //Edge* f = *ff;
-                    if(f->line()) {
-
-                        double w = e->v().unit() & f->v().unit(); w = (1.0 - w)/2.0;
-                        //double w = e->v().unit() ^ f->v().unit(); w = 1.0 - w;
-                        wsum += w;
-                        v += (e->v() + f->v())/2.0 * w;
-                        ++count;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if(count <= 0) continue;
-        //v /= wsum;
-        //v /= count;
-        v.norm();
-        v *= com->ev_quant*0.015;
-        n->v += v;
-
-        //move(*n, n->cp + v);
-    }*/
 
 
 

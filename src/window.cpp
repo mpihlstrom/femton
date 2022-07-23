@@ -205,7 +205,8 @@ Window::Window() {
 
     brush.toggle(Brush::Rub);
     rub_button->setChecked(true);
-    blend_button->setChecked(false);
+    //brush.toggle(Brush::Blend);
+    //blend_button->setChecked(true);
 
     set_tool(&brush);
 
@@ -273,7 +274,11 @@ void Window::new_canvas()
     }
     com->randomize();*/
 
-    for(int k = 0; k < 53; ++k) {
+
+    com->split_edge(&tris[0]->b, 0.5);
+
+    /*
+    for(int k = 0; k < 4; ++k) {
         int i = rand() % tris.size();
         Vec3 ru3(rand_uni(),rand_uni(),rand_uni());
         Vec2 ru = Vec2(Vec3(1.0)/3.0);
@@ -287,6 +292,7 @@ void Window::new_canvas()
                 tris.push_back(e->t);
         }
     }
+    */
 
     com->move_nodes();
     com->delaunify();

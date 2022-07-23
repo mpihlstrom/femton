@@ -16,8 +16,8 @@ Complex::Move Complex::str_to_move(std::string str) {
 
 Complex::Complex(bool configure) :
     Units(512*2),
-    color_dist_th(0.5/255.0),
-    ev_quant(0.005 * Units),
+    color_dist_th(0.25/255.0),
+    ev_quant(0.01 * Units),
     ar_quant(ev_quant*ev_quant * 1),
     purge_cos_thresh(-0.99995),
     ns(&nodes),

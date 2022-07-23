@@ -136,8 +136,8 @@ void main()
                         vec4 c1 = texture(surface_buffer, sample1_p);
                         uint id1 = texture(surface_id_buffer, sample1_p).r;
                         if(id1 > 0) {
-                            //float w = pow(1 - sqrt(i*i + j*j) / radius2, 1);
-                            float dist = c_dist(goal, c1);// * w;
+                            //float w = 1 - sqrt(i*i + j*j) / (radius2);
+                            float dist = c_dist(goal, c1);
 
                             if(dist > max_dist) {
                                 max_dist = dist;
@@ -162,7 +162,8 @@ void main()
                         vec4 g1 = texture(gaussian_v_buffer, sample1_p);
                         uint id1 = texture(surface_id_buffer, sample1_p).r;
                         if(id1 > 0) {
-                            float dist = (c_dist(goal, c1) - min_dist) / (max_dist - min_dist);
+                            //float dist = (c_dist(goal, c1) - min_dist) / (max_dist - min_dist);
+                            float dist = (c_dist(goal, c1)) / (max_dist);
 
                             float exp_d = -dist * contrast;
                             float exp_gd = exp_d * cw + exp_w * (1-cw);
