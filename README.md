@@ -6,30 +6,32 @@ This project came about out of the impetus of exploring the triangulation for ma
 
 ![brush](https://user-images.githubusercontent.com/2462565/180416854-f2599de5-6221-4109-952a-8b3808c57ae2.gif) ![smooth](https://user-images.githubusercontent.com/2462565/180481763-19affa20-f9e5-4e65-a7ef-776ec027b16d.gif) ![roll2_](https://user-images.githubusercontent.com/2462565/180505881-c258d626-7392-43fa-bfb9-fc96751aac7b.gif)
 
-
 For the realization of a manipulable triangulation it is necessary to handle the occurence of intersecting edges which violate the triangulation condition when vertices are moved. In such cases, it turns out, re-triangulation is always possible by "flipping" edges between specific triangle pairs. For image representation, an appropriate re-triangulation can be arrived at by flipping edges in a way that is visually nondisruptive. A central part of the software of this project is the implementation of an algorithm which, in accordance with a principle of visual retention, performs re-triangulation as though the vertices had moved synchronously in continuous linear trajectories to their new positions.
+
+![flashes](https://user-images.githubusercontent.com/2462565/180773726-1dd887a5-d88e-4536-8ec5-7011de0b3da1.gif) ![flashes_wf_1](https://user-images.githubusercontent.com/2462565/180774460-fa33a92a-3323-45ba-a4e7-f75ee54cf6fe.gif) ![flashes_wf](https://user-images.githubusercontent.com/2462565/180773730-fe06d871-c76c-40e6-93fa-a1bc337908bb.gif)
 
 ## Introduction
 
 ### The principle of visual retention 
 
-In an essential sense, the image representation of a static triangulation is unequivocally given. This is no longer the case when vertices are moved, inserted or removed, whereupon some decisions regarding the constituting of the triangulation, and by extension the representation, need to be made. Of paramount importance in these decisions is the consistency of representation, in other words, that the visual information, as presented to the retina, is retained throughout manipulation. This guiding notion, pertaining to the collection of more or less coerced constituting decisions in general, is here referred to as *the principle of visual retention*. It may be considered the central dogma, as it were, spanning this entire project.
+A 2D triangulation with colored triangles uniquely represents an image. When vertices are moved, inserted or removed, however, some decisions regarding the constituting of the triangulation, and by extension the representation, need to be made. Of paramount importance in these decisions is the consistency of representation, in other words, that the visual information, as presented to the retina, is retained throughout manipulation. This guiding notion, pertaining to the collection of more or less coerced constituting decisions in general, is here referred to as *the principle of visual retention*. It may be considered the central dogma, as it were, spanning this entire project.
 
 ### Contour and adaptive resolution
 
-Contour can be defined as a path of edges where triangles have uniform color along either side of the path but distinct color across the path. Contour is an important concept because it is, in some regard, the basic element of visual information and because as a delimiter of representation it establishes, among other things, something analogous to pixel resolution only more adaptive: Image regions with uniform color can be consituted by large triangles while regions with more visual detail must be constituted by smaller triangles. The limit in detail, just like with a pixel raster, is ultimately determined by the size of the smallest contour edge unit.
+Contour can be defined as a path of edges where triangles have uniform color along either side of the path but distinct color across the path. Contour is an important concept because it is, in some regard, the basic element of visual information and because as a delimiter of representation it establishes, among other things, something analogous to pixel resolution only more adaptive: Image regions with uniform color can be consituted by large triangles while regions with more visual detail must be constituted by smaller triangles. The limit in detail, just like with a pixel raster, is ultimately determined by the smallest contour edge length.
 
-![adaptive](https://user-images.githubusercontent.com/2462565/180307109-54b144eb-5e24-498d-9965-6e15350a1f75.png)
+![adaptive](https://user-images.githubusercontent.com/2462565/180742505-22bf2d8b-802a-4e6a-b619-ede04e80f6f8.png)
 
 ### Moving vertices
 
 In the general case, when an edge is flipped, the visual impression of the triangulation will change because no reassignment of triangle colors can prevent contour from being disrupted. But in the case when an edge is flipped precisely at the incident of vertex interesection, and if the colors are reassigned in the proper way, contour will indeed remain the same before and after flipping. The principle of visual retention therefore suggests that edges should be flipped only when a vertex intersects it.
 
-![flip_](https://user-images.githubusercontent.com/2462565/180372075-0bd6cf65-8d3e-4e38-962a-9111fd827604.gif) ![flip3](https://user-images.githubusercontent.com/2462565/180336545-fa470595-a978-44ef-96a6-c793ce9f47e2.gif)
+![flip_](https://user-images.githubusercontent.com/2462565/180657407-c656d479-7a5d-4672-a41d-9d3c4d9d5ffd.gif) ![flip3](https://user-images.githubusercontent.com/2462565/180657414-0e078bd4-09f8-4fed-9fe2-ea1d4d9d5eab.gif)
 
 In turn, in what order to flip edges also becomes a matter subsumed by the principle of visual retention. One intuitive order is given by treating vertices as moving synchronously along linear trajectories through time. An inductive method for re-triangulation can then be outlined: *Progress along the time line until some first triangle is intersected at some time t' and resolve the violation by flipping. The collection of triangles at t' is now a triangulation. Repeat the process progressing from t' and continue repeating until all vertices have moved to their new positions. The re-triangulation is now complete.* 
 
-![github_1](https://user-images.githubusercontent.com/2462565/176647543-0d9f3e1a-3cee-460f-82ea-48246268ed56.gif) ![github_2](https://user-images.githubusercontent.com/2462565/176647568-434c5d02-c11f-48cb-a51a-3220212f12d2.gif) ![github_3](https://user-images.githubusercontent.com/2462565/176647584-3cccacb1-72d2-42f1-a289-094924395db3.gif)
+![cont75](https://user-images.githubusercontent.com/2462565/180953154-375f94bf-dfca-49aa-b097-31e57d9819e1.gif) ![cont75both](https://user-images.githubusercontent.com/2462565/180953164-a614ba30-fb1b-4e7e-b2eb-b6fb5609bc44.gif) ![cont75wf](https://user-images.githubusercontent.com/2462565/180953175-476c719b-8ac9-4fbd-85ae-6f996fd691f0.gif)
+
 
 More details about the re-triangulation algorithm are described [elsewhere](exposition.md).
 
@@ -38,8 +40,6 @@ More details about the re-triangulation algorithm are described [elsewhere](expo
 The removal of a vertex from a triangulation necessarily prompts some form of re-triangulation. Incidentally, the removal of a vertex is also a solution to the corner case problem that vertices can become precisely superposed when re-triangulating moving vertices. The apparatus of removing a vertex can therefore be delegated by simply moving the vertex so that it superposes a neighbor vertex.
 
 A typical application of vertex removal is removing those representationally redundant vertices whose adjacent triangles is of the same color.
-
-[show removal of a redudant vertex]
 
 ### Inserting vertices
 
@@ -62,8 +62,6 @@ One should bare in mind that shading techniques amount to post-processing on ras
 ## Screenshots
 
 ![tumblr_4433e08e2f6b4087167ec823fbc00a08_cc0f846d_1280](https://user-images.githubusercontent.com/2462565/180423962-11adf262-d10b-4810-b828-6812a2005730.jpg)
-
-![git_flashes](https://user-images.githubusercontent.com/2462565/176651031-2104efcf-75ef-4fa0-b751-da3a71ee17d1.gif) ![out](https://user-images.githubusercontent.com/2462565/180302797-72d971ea-a3a1-406d-9bfe-262af9587275.gif)
 
 https://user-images.githubusercontent.com/2462565/176846043-6d02d548-be18-4a62-948f-526be59c24ca.mp4
 
