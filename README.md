@@ -14,7 +14,7 @@ For the realization of a manipulable triangulation it is necessary to handle the
 
 ### The principle of visual retention 
 
-A 2D triangulation with colored triangles represents an image. When vertices are moved, inserted or removed, however, some decisions regarding the constituting of the triangulation, and by extension the representation, need to be made. Of paramount importance in these decisions is the consistency of representation, in other words, that the visual information, as presented to the retina, is retained throughout manipulation. This guiding notion, pertaining to the collection of more or less coerced constituting decisions in general, is here referred to as *the principle of visual retention*. It may be considered the central dogma, as it were, spanning this entire project.
+A 2D triangulation with colored triangles represents an image. When vertices are moved, inserted or removed, however, some decisions regarding potentially divergent constituting of the triangulation, and by extension the representation, need to be made. Of paramount importance in these decisions is the consistency of representation, in other words, that the visual information, as presented to the retina, is retained throughout manipulation. This guiding notion, pertaining to the collection of more or less coerced constituting decisions in general, is here referred to as *the principle of visual retention*. It may be considered the central dogma, as it were, spanning this entire project.
 
 ### Contour and adaptive resolution
 
