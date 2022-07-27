@@ -8,7 +8,7 @@ This project came about out of the impetus of exploring the triangulation for ma
 
 For the realization of a manipulable triangulation it is necessary to handle the occurence of intersecting edges which violate the triangulation condition when vertices are moved. In such cases, it turns out, re-triangulation is always possible by "flipping" edges between specific triangle pairs. For image representation, an appropriate re-triangulation can be arrived at by flipping edges in a way that is visually nondisruptive. A central part of the software of this project is the implementation of an algorithm which, in accordance with a principle of visual retention, performs re-triangulation as though the vertices had moved synchronously in continuous linear trajectories to their new positions.
 
-![flashes](https://user-images.githubusercontent.com/2462565/180773726-1dd887a5-d88e-4536-8ec5-7011de0b3da1.gif) ![flashes_wf_1](https://user-images.githubusercontent.com/2462565/180774460-fa33a92a-3323-45ba-a4e7-f75ee54cf6fe.gif) ![flashes_wf_2](https://user-images.githubusercontent.com/2462565/181200353-0a02802f-6389-444b-998b-6b8da7440483.gif)
+![flashes](https://user-images.githubusercontent.com/2462565/181200969-9b0baef3-38ac-45f6-8086-b2ac84e5072f.gif) ![flashes_wf_1](https://user-images.githubusercontent.com/2462565/181201001-01e7ef4e-5a9a-4af6-94e2-47bc257f6884.gif) ![flashes_wf_2](https://user-images.githubusercontent.com/2462565/181201014-ca563ee1-5cbb-46b8-a462-8b1d7bfe5daf.gif)
 
 ## Introduction
 
