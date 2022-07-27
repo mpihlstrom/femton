@@ -8,7 +8,7 @@ This project came about out of the impetus of exploring the triangulation for ma
 
 For the realization of a manipulable triangulation it is necessary to handle the occurence of intersecting edges which violate the triangulation condition when vertices are moved. In such cases, it turns out, re-triangulation is always possible by "flipping" edges between specific triangle pairs. For image representation, an appropriate re-triangulation can be arrived at by flipping edges in a way that is visually nondisruptive. A central part of the software of this project is the implementation of an algorithm which, in accordance with a principle of visual retention, performs re-triangulation as though the vertices had moved synchronously in continuous linear trajectories to their new positions.
 
-![flashes](https://user-images.githubusercontent.com/2462565/181200969-9b0baef3-38ac-45f6-8086-b2ac84e5072f.gif) ![flashes_wf_1](https://user-images.githubusercontent.com/2462565/181201001-01e7ef4e-5a9a-4af6-94e2-47bc257f6884.gif) ![flashes_wf_2](https://user-images.githubusercontent.com/2462565/181201014-ca563ee1-5cbb-46b8-a462-8b1d7bfe5daf.gif)
+![cont75](https://user-images.githubusercontent.com/2462565/180953154-375f94bf-dfca-49aa-b097-31e57d9819e1.gif) ![cont75both](https://user-images.githubusercontent.com/2462565/180953164-a614ba30-fb1b-4e7e-b2eb-b6fb5609bc44.gif) ![cont75wf](https://user-images.githubusercontent.com/2462565/180953175-476c719b-8ac9-4fbd-85ae-6f996fd691f0.gif)
 
 ## Introduction
 
@@ -30,8 +30,7 @@ In the general case, when an edge is flipped, the visual impression of the trian
 
 In turn, in what order to flip edges also becomes a matter subsumed by the principle of visual retention. One intuitive order is given by treating vertices as moving synchronously along linear trajectories through time. An inductive method for re-triangulation can then be outlined: *Progress along the time line until some first triangle is intersected at some time t' and resolve the violation by flipping. The collection of triangles at t' is now a triangulation. Repeat the process progressing from t' and continue repeating until all vertices have moved to their new positions. The re-triangulation is now complete.* 
 
-![cont75](https://user-images.githubusercontent.com/2462565/180953154-375f94bf-dfca-49aa-b097-31e57d9819e1.gif) ![cont75both](https://user-images.githubusercontent.com/2462565/180953164-a614ba30-fb1b-4e7e-b2eb-b6fb5609bc44.gif) ![cont75wf](https://user-images.githubusercontent.com/2462565/180953175-476c719b-8ac9-4fbd-85ae-6f996fd691f0.gif)
-
+![flashes](https://user-images.githubusercontent.com/2462565/181200969-9b0baef3-38ac-45f6-8086-b2ac84e5072f.gif) ![flashes_wf_1](https://user-images.githubusercontent.com/2462565/181201001-01e7ef4e-5a9a-4af6-94e2-47bc257f6884.gif) ![flashes_wf_2](https://user-images.githubusercontent.com/2462565/181201014-ca563ee1-5cbb-46b8-a462-8b1d7bfe5daf.gif)
 
 More details about the re-triangulation algorithm are described [elsewhere](exposition.md).
 
