@@ -30,7 +30,8 @@ In the general case, when an edge is flipped, the visual impression of the trian
 
 In turn, in what order to flip edges also becomes a matter subsumed by the principle of visual retention. One intuitive order is given by treating vertices as moving synchronously along linear trajectories through time. An inductive method for re-triangulation can then be outlined: *Progress along the time line until some first triangle is intersected at some time t' and resolve the violation by flipping. The collection of triangles at t' is now a triangulation. Repeat the process progressing from t' and continue repeating until all vertices have moved to their new positions. The re-triangulation is now complete.* 
 
-![flashes](https://user-images.githubusercontent.com/2462565/181200969-9b0baef3-38ac-45f6-8086-b2ac84e5072f.gif) ![flashes_wf_1](https://user-images.githubusercontent.com/2462565/181201001-01e7ef4e-5a9a-4af6-94e2-47bc257f6884.gif) ![flashes_wf_2](https://user-images.githubusercontent.com/2462565/181201014-ca563ee1-5cbb-46b8-a462-8b1d7bfe5daf.gif)
+![flashes](https://user-images.githubusercontent.com/2462565/181200969-9b0baef3-38ac-45f6-8086-b2ac84e5072f.gif) ![flashes_wf_1](https://user-images.githubusercontent.com/2462565/181201001-01e7ef4e-5a9a-4af6-94e2-47bc257f6884.gif) ![flashes_wf_2](https://user-images.githubusercontent.com/2462565/181259510-68bf3e04-fad5-4dd0-ba76-bd91915caa87.gif)
+
 
 More details about the re-triangulation algorithm are described [elsewhere](exposition.md).
 
