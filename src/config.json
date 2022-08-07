@@ -1,0 +1,24 @@
+{
+"line width" : 2,
+"point size" : 4,
+
+"surface" : true,
+"gaussian" : true,
+"painting" : true,
+"nodes" : false,
+"edges" : false,
+"control net" : false,
+
+
+"contrast" : 1.0,
+"gaussian_size" : 30,
+"min_gaussian_q" : 0.0,
+"contrast_scale" : 12,
+
+
+"camera_zoom" : 1,
+
+"move_mode" : "concur",
+
+"load" : "out"
+}
