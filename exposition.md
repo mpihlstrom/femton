@@ -1,6 +1,6 @@
 *[The LaTeX support in GitHub markdown is a great initiative but it's not working properly, for me. It's mainly the inline stuff which is buggy. I have tried to adapt, at some expense of coherence and legibility, unfortunately.]*
 
-# Edge semantic triangulation: a technical exposition [draft]
+# Edge-semantic triangulation: a technical exposition [draft]
 
 This text primarily serves as a memorandum for myself, a documentation of the mathematical formulas used in this project and the outlining motivation for them. As such, the ambition has not been an exahustive description of the algorithmic content.
 
