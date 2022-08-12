@@ -2,7 +2,7 @@
 
 ## About
 
-This project came about with the exploration of manipulable image represenation from first princples using the triangulation as an alternative to the traditional paradigm of pixel and vector graphics. In this conceptualization, an image is represented by colored triangles in a triangulation where along with proper re-triangulation vertices can be moved, inserted and removed. By combining the connected characteristic of the pixel grid with the free shape characteristic of polygons, such a triangulation differentiates itself by being manipulable both via the spatiality and the geometry of its visual elements.
+This project came about with the exploration of manipulable image representation from first princples using the triangulation as an alternative to the traditional paradigm of pixel and vector graphics. In this conceptualization, an image is represented by colored triangles in a triangulation where along with proper re-triangulation vertices can be moved, inserted and removed. By combining the connected characteristic of the pixel grid with the free shape characteristic of polygons, such a triangulation differentiates itself by being manipulable both via the spatiality and the geometry of its visual elements.
 
 ![brush](https://user-images.githubusercontent.com/2462565/180416854-f2599de5-6221-4109-952a-8b3808c57ae2.gif) ![smooth](https://user-images.githubusercontent.com/2462565/180481763-19affa20-f9e5-4e65-a7ef-776ec027b16d.gif) ![roll2_](https://user-images.githubusercontent.com/2462565/180505881-c258d626-7392-43fa-bfb9-fc96751aac7b.gif)
 
@@ -46,7 +46,7 @@ For a manipulable triangulation representation to show basic capabilities for im
 | - | - | - |
 | ![split](https://user-images.githubusercontent.com/2462565/180255443-846e5f72-0f0b-46ad-b97f-765df25eaf74.gif) | ![refract2](https://user-images.githubusercontent.com/2462565/179385114-5fa6f233-335b-4615-a419-97b572f94db5.gif) | ![remove_all](https://user-images.githubusercontent.com/2462565/183014499-30d09f35-31a1-41f2-bc40-33a87090eaab.gif) |
 
-Removal of a vertex generally prompts a more intricate re-triangulation than insertion of a vertex. As it happens, vertex removal is also a solution to the problem that vertices can become precisely superposed when moving vertices. The apparatus of removing a vertex can therefore be delegated to moving the vertex so that it superposes a neighboring vertex. A typical application is the removal of visually redundant vertices, for instance a vertex inside a polygon shape.
+Removal of a vertex generally prompts a more intricate re-triangulation than insertion of a vertex. As it happens, vertex removal is also a solution to the problem that vertices can become precisely superposed when they are moved. The apparatus of removing a vertex can therefore be delegated to moving the vertex so that it superposes a neighboring vertex. A typical application is the removal of visually redundant vertices, for instance a vertex inside a polygon shape.
 
 ### Alternative triangulations
 
