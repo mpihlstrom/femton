@@ -2,7 +2,7 @@
 
 ## About
 
-This project came about with the exploration of manipulable image represenation from first princples using the triangulation as an alternative to the traditional paradigm of pixel and vector graphics. In this conceptualization, an image is represented by colored triangles in a triangulation where along with proper re-triangulation vertices can be moved, inserted and removed. By combining the connected characteristic of the pixel grid with the free shape characteristic of polygons, such a triangulation differentiates itself by being manipulable both via the spatiality and the geometry of its visual elements.
+This project came about with the exploration of manipulable image representation from first princples using the triangulation as an alternative to the traditional paradigm of pixel and vector graphics. In this conceptualization, an image is represented by colored triangles in a triangulation where along with proper re-triangulation vertices can be moved, inserted and removed. By combining the connected characteristic of the pixel grid with the free shape characteristic of polygons, such a triangulation differentiates itself by being manipulable both via the spatiality and the geometry of its visual elements.
 
 ![brush](https://user-images.githubusercontent.com/2462565/180416854-f2599de5-6221-4109-952a-8b3808c57ae2.gif) ![smooth](https://user-images.githubusercontent.com/2462565/180481763-19affa20-f9e5-4e65-a7ef-776ec027b16d.gif) ![roll2_](https://user-images.githubusercontent.com/2462565/180505881-c258d626-7392-43fa-bfb9-fc96751aac7b.gif)
 
