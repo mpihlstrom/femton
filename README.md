@@ -62,7 +62,7 @@ Can the Delaunay triangulation be used for image representation? To anwser this 
 
 Comparing the results of a simple transformation with contour splitting, it becomes apparent that, for the purpose of manipulable image representation, the choice of triangulation is not arbitrary. The Delaunay triangulation does however still find a use if it is applied on non-contour edges only, since flipping such edges does not have any visual impact. Because also this kind of constrained Delaunay triangulation is unique, a 1-to-1 relationship between image and triangulation is thus ensured.
 
-| No Delaunay | Constrained Delaunay | Percieved (in either case) |
+| No Delaunay | Constrained Delaunay | Perceived (in either case) |
 | - | - | - |
 | ![stroke_no](https://user-images.githubusercontent.com/2462565/182430474-5c508a34-a687-4504-b387-55dab4b53e0d.gif) | ![stroke_del](https://user-images.githubusercontent.com/2462565/182430483-3fc0b900-1d01-4fa7-96be-ae0fe02a6930.gif) | ![stroke_nowf](https://user-images.githubusercontent.com/2462565/182430493-c958a123-2c17-414f-ab8f-5b1875aa79de.gif) 
  
