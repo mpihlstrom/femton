@@ -169,15 +169,14 @@ void Complex::set_node_type()
 /*
  O = vertex
 
- O---------.
- |  ,----.  \
- | /      \ |
- | |  O   | |
- | |   \  | |
- | |   e\j| /
- | \     \|/
- \  `-----O
-  `------´
+ O--------.
+ |  ,---.  \
+ | /     \ |
+ | |  O  | |
+ | |   \j| /
+ | \   e\|/
+ \  `----O
+  `-----´
 */
 
 bool Complex::remove_self_folded_tri(Edge* e)
@@ -200,14 +199,13 @@ bool Complex::remove_self_folded_tri(Edge* e)
 /*
  O = vertex
 
-  ,-O-.
- /  |  \
- |  |  |
- |  O  |
- |  |  |
- | e|j |
- \  |  /
-  `-O-´
+  O----.
+  |\    \
+  | \   |
+  |  O  |
+  |   \j|
+  \   e\|
+   `----O
 */
 
 bool Complex::remove_double_linked_tri(Edge* e)
