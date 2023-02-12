@@ -82,7 +82,7 @@ bool Node::operator<(Node const& s) {
 std::tuple<double,double> Node::calc_flip_t() {
     Edge* e = *entry_;
     double min_t1 = 1.0;
-    double min_t2 = DBL_MAX;
+    double min_t2 = 1000000000.0;//DBL_MAX;
     Edge* min_e1 = e;
     Edge* min_e2 = e;
     do {

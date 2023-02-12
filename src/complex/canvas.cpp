@@ -420,7 +420,7 @@ bool Complex::constrained(Edge* e) {
 }
 
 bool Complex::flip_delaunay(Edge* e, bool constrained) {
-    if(padding(e) || jpadding(e) || (constrained && this->constrained(e)) || !jt_inside_circumcircle(e))
+    if(epadding(e) || jpadding(e) || (constrained && this->constrained(e)) || !jt_inside_circumcircle(e))
         return false;
     Core::oflip(e);
     return true;
@@ -441,7 +441,7 @@ void Complex::delaunify(bool constrained) {
 
 bool Complex::redelaunay(Edge* e)
 {
-    if(jpadding(e) || padding(e)) return false;
+    if(jpadding(e) || epadding(e)) return false;
 
     if(constrained(e)) return false;
 

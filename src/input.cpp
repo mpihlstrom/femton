@@ -19,6 +19,7 @@
 Vec2 cursor;
 
 unsigned long prev_pointer_time;
+Vec2 old_pos = Vec2();
 
 
 void Graphics::hover_mouse_event(QHoverEvent* me) {
@@ -53,7 +54,9 @@ void Graphics::hover_mouse_event(QHoverEvent* me) {
     prev_pointer_time = (unsigned long)GetMessageTime();
 #else
     ::cursor = Vec2(me->position().x(), me->position().y()) * pixelratio;
-    mousetool->motion(Vec2(me->position().x() - me->oldPos().x(), me->position().y() - me->oldPos().y()) * pixelratio);
+    Vec2 pos(me->position().x(), me->position().y());
+    mousetool->motion((pos - old_pos) * pixelratio);
+    old_pos = pos;
 #endif
 
     update();

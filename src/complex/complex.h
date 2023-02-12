@@ -7,9 +7,9 @@
 #include <iostream>
 #include <unordered_map>
 
-#define padding(e) ((e)->t->type == Tri::Padding)
-#define jpadding(e) (padding(e->j))
-#define ejpadding(e) (padding((e)) || padding((e)->j))
+#define epadding(e) (e->t->type == Tri::Padding)
+#define jpadding(e) (epadding(e->j))
+#define ejpadding(e) (epadding((e)) || epadding((e)->j))
 #define contour(e) ((e->t->color - e->j->t->color).dist() > ContourColorDist)
 
 template<typename S> struct Euiterator {

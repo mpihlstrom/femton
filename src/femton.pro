@@ -75,7 +75,7 @@ DISTFILES += \
     graphics/shaders/painting/vertex.glsl
 
 win32 {
-    LIBS += opengl32.lib
+    LIBS += libopengl32
     LIBS += mpir.lib
 }
 

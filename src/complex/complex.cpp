@@ -219,7 +219,7 @@ Node* Complex::split_edge(Edge const* e, double f) {
     e->nxt->n = o;
     if(r->entry() ==  e->nxt) r->setentry(&t2->b);
     o->setentry(&t2->a);
-    if(padding(e) || jpadding(e)) o->type = Node::Border;
+    if(epadding(e) || jpadding(e)) o->type = Node::Border;
     j->n = o;
     Tri *t3 = j->t,
         *t4 = new Tri(o, j->prv, q, j->prv->j, r, &t2->a, t3->type, t3->color);

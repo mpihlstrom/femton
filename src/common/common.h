@@ -27,8 +27,8 @@ int rand_count();
 #define rad(a) (2.*M_PI * (double)(a) / 360.0)
 #define deg(a) (360. * (double)(a) / (2.*M_PI))
 
-#define max(x, y) (((x) > (y)) ? (x) : (y))
-#define min(x, y) (((x) < (y)) ? (x) : (y))
+#define my_max(x, y) (((x) > (y)) ? (x) : (y))
+#define my_min(x, y) (((x) < (y)) ? (x) : (y))
 
 template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));

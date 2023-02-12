@@ -579,8 +579,8 @@ std::list<Tri*> scan_trigons(Vec2 origin_uni, double r_uni) {
     double r = r_uni * (w+h)*0.5 * 0.5;
 
     uint32_t* buffer = ((Surface_render*)draw->renders["surface"])->fbo_buffer(Base_render::FBO_buffer::Id, true);
-    for(int x = (int)max(p.x-r, 0); x < (int)min(p.x+r, w); ++x) {
-        for(int y = (int)max(p.y-r, 0); y < (int)min(p.y+r, h); ++y) {
+    for(int x = (int)my_max(p.x-r, 0); x < (int)my_min(p.x+r, w); ++x) {
+        for(int y = (int)my_max(p.y-r, 0); y < (int)my_min(p.y+r, h); ++y) {
             if((x-p.x)*(x-p.x) + (y-p.y)*(y-p.y) > r*r)
                 continue;
             uint32_t id = *(buffer + y*w + x);

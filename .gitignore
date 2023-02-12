@@ -1,5 +1,5 @@
-mpir.lib
-mpir.dll
+src/.qtc_clangd/
+src/Users*
 
 *.o
 
