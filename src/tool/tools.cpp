@@ -129,7 +129,7 @@ void Brush::rub(Vec2 scr_v)
         auto diff = (n->p() - mp_can).length();
         double r = diff / r_can;
         if(r < 1.0) {
-            auto v = view->scr_can_v(scr_v);//*pow((1.0-r),0.25);
+            auto v = view->scr_can_v(scr_v)*exp(-r*0.25);
             if(perturb) {
                 //double ang = M_PI*(rand_uni()*2.0-1.0)*pert_intensity;
                 double ang = M_PI*rand_pn1()*pert_intensity;
@@ -164,8 +164,9 @@ void Brush::push()
                 dir = v.unit() * fringe_dist*intensity;
                 com->move(*n, n->p() + dir);
             } else {
-                dir = v.scalerotate(Vec2(1,0.1).unit());// * intensity * 0.3;
-                com->move(*n, m + dir.round());
+                //dir = v.scalerotate(Vec2(1,0.1).unit());// * intensity * 0.3;
+                dir = v * -intensity;
+                com->move(*n, n->p() + dir);
             }
         }
     }

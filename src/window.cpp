@@ -177,21 +177,23 @@ Window::Window() {
     drop_button = new QCheckBox("drop");
     connect(drop_button, &QPushButton::clicked, this, [this](bool){ brush.toggle(Brush::Drop); });
     buttons->addWidget(drop_button);
-    //brush.toggle(Brush::Drop);
-    //drop_button->setChecked(true);
 
     //split_button = new QCheckBox("split");
     //connect(split_button, &QPushButton::clicked, this, [this](bool b){ brush.toggle(Brush::Split_line); });
     //buttons->addWidget(split_button);
+
     rub_button = new QCheckBox("rub");
     connect(rub_button, &QPushButton::clicked, this, [this](bool){ brush.toggle(Brush::Rub); });
-    buttons->addWidget(rub_button);
+    buttons->addWidget(rub_button);   
+
     push_button = new QCheckBox("push");
     connect(push_button, &QPushButton::clicked, this, [this](bool){ brush.toggle(Brush::Push); });
     buttons->addWidget(push_button);
+
     timer_button = new QCheckBox("timer");
     connect(timer_button, &QPushButton::clicked, this, [this](bool){ brush.toggle(Brush::Timer); });
     buttons->addWidget(timer_button);
+
     contrast_button = new QCheckBox("contrast");
     connect(contrast_button, &QPushButton::clicked, this, [this](bool){ brush.toggle(Brush::Contrast); });
     buttons->addWidget(contrast_button);
@@ -199,14 +201,19 @@ Window::Window() {
     blur_button = new QCheckBox("blur");
     connect(blur_button, &QPushButton::clicked, this, [this](bool){ brush.toggle(Brush::Blur); });
     buttons->addWidget(blur_button);
+
     smooth_button = new QCheckBox("smooth");
     connect(smooth_button, &QPushButton::clicked, this, [this](bool){ brush.toggle(Brush::Smooth); });
     buttons->addWidget(smooth_button);
 
-    brush.toggle(Brush::Rub);
-    rub_button->setChecked(true);
+    //brush.toggle(Brush::Rub);
+    //rub_button->setChecked(true);
     //brush.toggle(Brush::Blend);
     //blend_button->setChecked(true);
+    brush.toggle(Brush::Push);
+    push_button->setChecked(true);
+    brush.toggle(Brush::Timer);
+    timer_button->setChecked(true);
 
     set_tool(&brush);
 
@@ -255,9 +262,8 @@ void Window::new_canvas()
     for(auto t : com->ts)
         tris.push_back(t);
 
-    /*
+/*
     for(int k = 0; k < 100; ++k) {
-//    for(int k = 0; k < 0; ++k) {
         int i = rand() % tris.size();
         Vec3 ru3(rand_uni(),rand_uni(),rand_uni());
         Vec2 ru = Vec2(Vec3(1.0)/3.0);
@@ -272,13 +278,13 @@ void Window::new_canvas()
         }
         com->delaunay(*n);
     }
-    com->randomize();*/
+    com->randomize();
+*/
 
 
     com->split_edge(&tris[0]->b, 0.5);
 
-    /*
-    for(int k = 0; k < 4; ++k) {
+    for(int k = 0; k < 0; ++k) {
         int i = rand() % tris.size();
         Vec3 ru3(rand_uni(),rand_uni(),rand_uni());
         Vec2 ru = Vec2(Vec3(1.0)/3.0);
@@ -292,7 +298,7 @@ void Window::new_canvas()
                 tris.push_back(e->t);
         }
     }
-    */
+
 
     com->move_nodes();
     com->delaunify();

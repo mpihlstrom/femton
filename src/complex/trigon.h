@@ -6,6 +6,8 @@
 #include "common/entity.h"
 #include "edge.h"
 #include "mpir/mpir.h"
+#include <set>
+#include <map>
 
 struct Node;
 struct Tri;
@@ -20,6 +22,13 @@ struct Concomp {
     Vec2 mid;
     double peri;
     double cos;
+    std::set<Concomp*> neighbors;
+    Vec3 covar;
+    Vec2 eigv;
+    Vec2 eigvec1;
+    Vec2 eigvec2;
+    double r;
+    std::vector<Edge*> cnt;
 };
 
 struct Tri : Class, Eumetry {
