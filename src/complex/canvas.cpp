@@ -99,7 +99,7 @@ void Complex::purge() {
     //purge_straight_lines();
 
     purge_nonlines();
-    purge_small_trigons();
+    //purge_small_trigons();
     //purge_stars();
 }
 
@@ -199,6 +199,47 @@ void recursive_fill(Concomp* cc, Edge* e) {
     recursive_fill(cc, e->prv->j);
 }
 
+void populate_neighbors(Tri* t) {
+    for(auto e : *t) {
+        auto neighbor_cc = e->j->t->cc;
+        if(neighbor_cc == nullptr)
+            continue;
+        //if(t->cc->neighbors.find(neighbor_cc) == t->cc->neighbors.end()) {
+        t->cc->neighbors.insert(neighbor_cc);
+        //}
+    }
+}
+
+struct Link
+{
+    Edge* e;
+    Link* nxt;
+    Link* prv;
+};
+
+bool contour_recursive(Concomp* cc, Node* n, Edge* start, Col rc) {
+    if(cc->cnt.size() > 250) {
+        //return false;
+    }
+    if(cc->ts.size()*3 < cc->cnt.size()) {
+        myDebug() << "bad size";
+        return false;
+    }
+    for(auto e : *n) {
+        if(e->t->cc == cc && e->j->t->cc != cc) {
+            if(e == start) {
+                //e->t->color = Col::Red;
+                return true;
+            }
+            cc->cnt.push_back(e);
+            //e->t->color = rc;
+            return contour_recursive(cc, e->nxt->n, start, rc*1.01);
+        }
+    }
+    return false;
+}
+
+
 void create_ccs() {
     for(auto cc : com->ccs)
         delete cc;
@@ -216,7 +257,7 @@ void create_ccs() {
         com->ccs.push_back(cc);
     }
     for(auto cc : com->ccs) {
-        auto col = Col::random();
+        //auto rc = Col::random();
         for(auto t : cc->ts) {
             cc->area += t->area();
             cc->mid += t->centroid();//*t->area();
@@ -227,41 +268,79 @@ void create_ccs() {
             }
         }
         cc->mid /= cc->ts.size();
+    }
+    for(auto cc : com->ccs) {
 
+        Edge* start = nullptr;
+        for(auto t : cc->ts) {
+            for(auto e : *t) {
+                if(e->t->cc == cc && e->j->t->cc != cc) {
+                    start = e;
+                    goto end;
+                }
+            }
+        }
+        end:
+        if(start != nullptr) {
+            auto rc = start->t->color*0.1;
+            cc->cnt.push_back(start);
+            auto ret = contour_recursive(cc, start->nxt->n, start, rc);
+            if(!ret) {
+                cc->cnt.clear();
+                myDebug() << "bad contour";
+            } else {
+                //myDebug() << "good contour";
+            }
+        } else {
+            myDebug() << "no start";
+        }
+
+
+
+        Vec3 covar;
+        for(auto t : cc->ts) {
+            for(auto e : *t) {
+                auto d = cc->mid - e->n->p();
+                covar += Vec3(d.x*d.x, d.y*d.y, d.x*d.y);
+            }
+
+            populate_neighbors(t);
+        }
+        covar /= (3 * cc->ts.size());
+        cc->covar = covar;
+        double T = covar.x + covar.y;
+        double D = covar.x*covar.y - covar.z*covar.z;
+        double sq = sqrt(fabs(T*T/4.0 - D));
+
+        cc->r = covar.z / (sqrt(covar.x)*sqrt(covar.y));
+        cc->eigv = Vec2(T/2 + sq, T/2 - sq);
+        cc->eigvec1 = Vec2(covar.z, cc->eigv.x - covar.x).unit();
+
+
+
+        int a = 4;
 
 
 
 
         /*
-        double l2acc = 0.0;
-        double cos = 0.0;
-
-        int count = 0;
-        Edge* h, *p;
-        col = Col::random();
-        Edge* e = &cc->ts.front()->a;
-        Edge* start = e;
-        do {
-            auto broke = false;
-            for(auto f : *e->n) { h = f; if(h->t->cc == cc && h->j->t->cc != cc) { broke = true; break;  } }
-            if(!broke) break;
-            if(count == 0) start = h;
-            else {
-                //cos += (p->v().unit() & e->v().unit() + 1.0) / 2.0;
-                cos += p->v().unit() ^ e->v().unit();
+        if(!(e->t->cc == cc && e->j->t->cc != cc))
+            continue;
+        auto end = Node::iterator(e);
+        Edge* g = nullptr;
+        for(auto f = Node::iterator(e); f != end; ++f) {
+            if(((*f)->t->cc != cc && (*f)->j->t->cc == cc)) {
+               g = *f;
+               break;
             }
-
-            l2acc += h->v().l2();
-
-            ++count;
-            if(count > cc->ts.size()*2 + 1) break;
-            p = h;
-            e = h->nxt;
-        } while(!((h == start) && count != 1));
-
-        cc->cos = cos/count;
-        cc->peri = l2acc;
+        }
+        if(g == nullptr)
+            continue;
+        auto ww = abs(e->v().unit0() ^ g->v().unit0());
+        v += g->v() * w;
         */
+
+
     }
 }
 
@@ -271,10 +350,66 @@ bool Complex::automata()
     purge_nonlines_recursive();
     color_to_line();
     refract();
+    refract();
+    refract();
+    refract();
     color_to_line();
     create_ccs();
 
 
+    if(true) {
+        for(auto cc : com->ccs) {
+
+            auto cnt_sz = cc->cnt.size();
+            for(int i = 0; i < cnt_sz; ++i) {
+                Vec2 v;
+                Edge* e = cc->cnt[i];
+                Vec2 v1 = e->v() - cc->cnt[(i + cnt_sz - 1) % cnt_sz]->v();
+                auto w = 0.0;
+                auto v2 = e->n->p() - cc->mid;
+
+                w = pow(abs((v2) ^ (e->v())), 2);
+                v += v1 * w;
+                v += v2.unit0() * com->ev_quant * w;
+                move(*e->n, e->n->cp + v / w);
+
+            }
+
+            /*
+            for(auto t : cc->ts) {
+                for(auto n : *t) {
+                    Vec2 v;
+                    double ws = 0.0;
+                    for(auto e : *n->n) {
+                        if(!e->line())
+                            continue;
+
+                        if(e->j->t->cc == nullptr) continue;
+                        if(!(e->t->cc == cc && e->j->t->cc != cc) && !(e->t->cc != cc && e->j->t->cc == cc)) continue;
+
+                        auto w = 0.0;
+                        auto v2 = e->n->p() - cc->mid;
+
+                        w = pow(abs((v2) ^ (e->v())), 2);
+                        v += e->v() * w;
+                        v += v2.unit0() * com->ev_quant * w * 5;
+                        ws += w;
+                    }
+                    if(ws <= 0)
+                        continue;
+                    if(v.dot() <= 0)
+                        continue;
+                    v = v / ws * 0.2;
+                    //v = v.unit() * com->ev_quant * 0.5;
+                    move(*n->n, n->n->cp + v);
+                }
+            }*/
+        }
+        move_nodes();
+        delaunify();
+    }
+
+/*
     for(auto n : ns) {
         if(n->type != Node::Floating) continue;
         Vec2 v;
@@ -307,15 +442,31 @@ bool Complex::automata()
 
         move(*n, n->cp + v);
     }
+    */
 
-/*
+
+    /*
     for(auto cc : com->ccs) {
-        auto col = Col::random();
+        double neigh_area = 0.0;
+        int count = 0;
+        Vec2 midv = 0;
+        double midvl = 0.0;
+        for(auto neigh : cc->neighbors) {
+            neigh_area += neigh->area;
+            midv += neigh->mid - cc->mid;
+            midvl += (neigh->mid - cc->mid).l2();
+            ++count;
+        }
+        midv /= midvl;
+        midv.norm();
+        neigh_area += cc->area;
+
         for(auto t : cc->ts) {
             for(auto e : *t) {
                 if(e->line())
                 {
-                    Vec2 v = e->v()*0.5;
+                    double jccar = e->j->t->cc ? e->j->t->cc->area : 0.0;
+                    Vec2 v = (e->v().unit() + midvl).unit() * com->ev_quant * 0.5;// + midvl;
                     //else v -= (m - n->cp);
                     //v += e->v()*e->t->cc->area;
                     move(*e->n, e->n->cp + v);
@@ -324,43 +475,65 @@ bool Complex::automata()
         }
         move_nodes();
     }
-*/
-
-    /*
-    for(auto n : ns) {
-        if(n->type != Node::Floating) continue;
-        Vec2 v;
-        int count = 0;
-        double wsum = 0.0;
-
-        count = 0;
-        for(auto e : *n) {
-            if(e->line())
-            {
-                double aa = abs(e->j->t->cc->area - e->t->cc->area);
-                //double aa = (e->j->t->cc->peri - e->t->cc->peri);
-                if(aa <= 0) continue;
-                auto w = pow(aa, -2);
-                wsum += w;//
-                v += Vec2(e->t->cc->mid + e->j->t->cc->mid - e->n->cp - e->n->cp).round()*-w;
-                ++count;
-            }
-        }
-
-        if(count <= 0) continue;
-
-        //v.norm(); v *= com->ev_quant * 0.5;
-        v /= wsum; v *= 0.005;
-
-        //n->v += v*0.01;
-        move(*n, n->cp + v);
-    }
-
-    for(auto n : ns) move(*n, n->cp + n->v);
     */
 
 
+    if(false) {
+        for(auto n : ns) {
+            if(n->type != Node::Floating) continue;
+            Vec2 v;
+            int count = 0;
+            double wsum = 0.0;
+
+            count = 0;
+            for(auto e : *n) {
+                if(e->line())
+                {
+                    auto vv1 = e->v();
+                    //auto vv2 = e->j->t->cc->mid - e->t->cc->mid;
+                    auto w = pow(abs(e->j->t->cc->r * e->t->cc->r),2.0);//abs(vv1.unit().dot(vv2.unit()));
+                    if(w <= 0.0) continue;// || w > 1.0) continue;
+                    vv1 *= w;
+                    //vv *= abs(e->t->cc->r);
+
+                    //if(e->t->cc == com->ccs[5])
+                    {
+                        v += vv1*w;// + (e->t->cc->mid - n->p()) * -w;
+                        wsum += w;
+                        ++count;
+                    }
+                }
+            }
+
+            if(count <= 0) continue;
+
+            if(v.dot() <= 0) continue;
+
+            v.norm(); v *= com->ev_quant * 0.6;
+            //v = v / wsum * 0.5;
+
+            //move(*n, n->cp + n->v);
+            move(*n, n->cp + v);
+        }
+
+        move_nodes();
+        delaunify();
+    }
+
+
+
+
+
+
+
+
+
+
+
 /*
+
+  //gravity
+
     for(auto n : ns) {
         //if(n->type == Node::Padding) n->v = 0;//continue;
         if(n->type == Node::Corner || n->type == Node::Padding) n->v = 0;//continue;
@@ -375,16 +548,19 @@ bool Complex::automata()
             //if(!e->line()) continue;
 
             auto v = Vec2(e->nxt->n->cp - n->cp);
-            auto mag = v.l2();
-            double a = 100035*com->ev_quant / pow(v.dot(),2);
-            double acceleration = (mag > 2.0*com->ev_quant)? a : 0;
-            if(!e->line()) acceleration *= 0;//1.5;
+            auto mag = v.dot() * 0.0005;
+            //double a = 20*com->ev_quant / pow(v.dot(),2);
+            double acceleration = 10*mag*exp(-e->w*10);//(mag > com->ev_quant)? a : 0;
+            if(!e->line()) {
+                //acceleration *= 0.01;//acc *= 0.85;
+                continue;
+            }
 
             acc += v.unit() * acceleration;
             ++count;
         }
-        if(count) n->v += acc / count;
-        n->v += acc;
+        if(!count) continue;//n->v -= acc / count;
+        n->v += acc / count;
 
     }
 

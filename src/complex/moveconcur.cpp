@@ -236,11 +236,25 @@ Node* Complex::remove(Cross* c)
     auto et = e->t;
     auto jt = j->t;
 
-    if(remove_self_folded_tri(e) || remove_self_folded_tri(e->nxt) || remove_self_folded_tri(e->prv))
-        return nullptr;
 
-    if(remove_double_linked_tri(e) || remove_double_linked_tri(j))
+    if(remove_self_folded_tri(e)) {
+        myDebug() << "self fold: e";
         return nullptr;
+    }
+    if(remove_self_folded_tri(e->nxt)) {
+        myDebug() << "self fold: e->nxt";
+        return nullptr;
+    }
+    if(remove_self_folded_tri(e->prv)) {
+        myDebug() << "self fold: e->prv";
+        return nullptr;
+    }
+
+
+    if(remove_double_linked_tri(e) || remove_double_linked_tri(j)) {
+        myDebug() << "double linked";
+        return nullptr;
+    }
 
     Edge *eprv = e->prv, *enxt = e->nxt;
     Edge *jprv = j->prv, *jnxt = j->nxt;

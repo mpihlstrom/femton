@@ -29,6 +29,7 @@ template<typename S> struct Vector2 {
     S operator&(Vector2 const& b) const { return x*b.x + y*b.y; }
 
     Vector2 unit() const { return *this / length(); }
+    Vector2 unit0() const { auto l = length(); return l <= 0? Vector2() : *this / l; }
 
     Vector2 round() const { return Vector2(::round(x), ::round(y)); }
 

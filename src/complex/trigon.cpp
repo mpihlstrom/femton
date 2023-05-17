@@ -91,13 +91,13 @@ void Root::init(Tri::Cross::Root const* cur)
                 kind = Imaginary;
             }
         } else {
-            //root1 = root2 = -(double)C/(double)B;
+            root1 = root2 = -(double)C/(double)B;
             kind = Linear;
         }
     } else {
         if(init_sq_sgn_lh1_big() >= 0) {
-            //root1 = -(double)B/((double)2*A) - sqrt((double)B*(double)B/((double)4*A*(double)A) - (double)C/(double)A);
-            //root2 = -(double)B/((double)2*A) + sqrt((double)B*(double)B/((double)4*A*(double)A) - (double)C/(double)A);
+            root1 = -(double)B/((double)2*A) - sqrt((double)B*(double)B/((double)4*A*(double)A) - (double)C/(double)A);
+            root2 = -(double)B/((double)2*A) + sqrt((double)B*(double)B/((double)4*A*(double)A) - (double)C/(double)A);
             kind = Square;
         } else {
             kind = Imaginary;
@@ -106,6 +106,7 @@ void Root::init(Tri::Cross::Root const* cur)
 }
 
 //operator<, biggest numbers on the top of the heap
+//returns true if f should come after s in queue
 bool Cross::lt(Tri::Cross* f, Tri::Cross* s)
 {
     auto d = f->crossroot - s->crossroot;
@@ -130,23 +131,35 @@ int Cross::Root::operator-(Root const& s) const
 {
     Root const& f = *this;
 
+    int idiff = 0;
+    auto froot = f.sqrtsgn <= 0 ? f.root1 : f.root2;
+    auto sroot = s.sqrtsgn <= 0 ? s.root1 : s.root2;
+    auto fdiff = froot - sroot;
+
+    //if(abs(fdiff) > 1e-13) return sgn(fdiff);
+
     switch(f.kind) {
         case Linear:
             switch(s.kind) {
                 case Linear:
-                    return sgn(f.B)*sgn(s.B)*sgn(s.C*f.B - f.C*s.B); //sgn(f.B)*sgn(s.B)*linlin_sgn_lh1_big(f,s);
+                    idiff = sgn(f.B)*sgn(s.B)*sgn(s.C*f.B - f.C*s.B); //sgn(f.B)*sgn(s.B)*linlin_sgn_lh1_big(f,s);
+                    break;
                 case Square: {
                     auto sgnL = sgn(s.A)*sgn(f.B)*sgn(f.B*s.B - 2*f.C*s.A); //sgn(s.A)*sgn(f.B)*linsq_sgn_lh1_big(f,s);
                     auto sgnR = s.sqrtsgn*sgn(s.B*s.B - 4*s.C*s.A); //s.sqrtsgn*linsq_sgn_rh1_big(s);
                     if(sgnL*sgnR <= 0)
-                       return sgnL - sgnR;
-                    return sgn(s.A)*sgnL*linsq_sgn_lh2_big(f, s);
+                        idiff = sgnL - sgnR;
+                    else
+                        idiff = sgn(s.A)*sgnL*linsq_sgn_lh2_big(f, s);
+                    break;
                 }
-                default: return 0;
             }
+            break;
         case Square: {
             switch(s.kind) {
-                case Linear: return -(s - f);
+                case Linear:
+                    idiff = -(s - f);
+                    break;
                 case Square: {
                     auto sgnL1 = sgn(f.A)*sgn(s.A)*sgn(s.B*f.A - f.B*s.A); //sgn(f.A)*sgn(s.A)*sqsq_sgn_lh1_big(f,s);
                     auto sgnR1 = sqsq_sgn_rh1_big(f,s);
@@ -155,14 +168,24 @@ int Cross::Root::operator-(Root const& s) const
                     auto sgnL2 = sgnL1*sgn(f.A)*sgn(s.A)*sgn(-f.B*s.B + 2*f.C*s.A + 2*s.C*f.A); //sgn_lh1*sgn(f.A)*sgn(s.A)*sqsq_sgn_lh2_big(f,s);
                     auto sgnR2 = sgnR1*-f.sqrtsgn*s.sqrtsgn*sqsq_sgn_rh2_big_2(f,s); //sgn_rh1*-f.sqrtsgn*s.sqrtsgn*sgn((s.B*s.B - 4*s.A*s.C)*(f.B*f.B - 4*f.A*f.C));
                     if(sgnL2 * sgnR2 <= 0)
-                        return sgnL2 - sgnR2;
-                    return sgnR2*sgn(sqsq_sgn_lh3_big(f, s));
+                        idiff = sgnL2 - sgnR2;
+                    else
+                        idiff = sgnR2*sgn(sqsq_sgn_lh3_big(f, s));
+                    break;
                 }
-                default: return 0;
             }
         }
-        default: return 0;
     }
+
+
+
+    if(sgn(fdiff) != sgn(idiff)) {
+        //qDebug() << "not equal sgn";
+        //qDebug() << fdiff;
+        //qDebug() << idiff;
+    }
+
+    return idiff;
 }
 
 
