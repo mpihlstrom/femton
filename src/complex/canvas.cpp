@@ -350,9 +350,6 @@ bool Complex::automata()
     purge_nonlines_recursive();
     color_to_line();
     refract();
-    refract();
-    refract();
-    refract();
     color_to_line();
     create_ccs();
 
@@ -360,32 +357,62 @@ bool Complex::automata()
     if(true) {
         for(auto cc : com->ccs) {
 
-            auto cnt_sz = cc->cnt.size();
+
+            int cnt_sz = cc->cnt.size();
             for(int i = 0; i < cnt_sz; ++i) {
                 Vec2 v;
-                Edge* e = cc->cnt[i];
-                Vec2 v1 = e->v() - cc->cnt[(i + cnt_sz - 1) % cnt_sz]->v();
-                auto w = 0.0;
-                auto v2 = e->n->p() - cc->mid;
+                Edge* e = cc->cntr(i);
+                Vec2 v1 = e->v();
+                Vec2 v2 = cc->cntr(i-1)->v() * -1;
 
-                w = pow(abs((v2) ^ (e->v())), 2);
-                v += v1 * w;
-                v += v2.unit0() * com->ev_quant * w;
-                move(*e->n, e->n->cp + v / w);
+                int ngh = cnt_sz*0.5;
+                Vec2 vn;
+                auto wns = 0.0;
+                for(int k = 0; k < ngh; ++k) {
+                    auto vn1 = cc->cntr(i+k)->v();
+                    auto vn2 = cc->cntr(i-1-k)->v() * -1;
+
+                    auto wn1 = pow(abs((v1) ^ (vn1)), 2);
+                    auto wn2 = pow(abs((v2) ^ (vn2)), 2);
+
+                    vn += vn1 * wn1;
+                    vn += vn2 * wn2;
+                    wns += wn1 + wn2;
+                }
+                if(wns <= 0)
+                    continue;
+                vn /= wns;
+
+                Vec2 v0;
+                auto w1 = 1.0;//pow(abs((v1) ^ (v3)), 1);
+                auto w2 = 1.0;//pow(abs((v2) ^ (v3)), 1);
+                v0 += v1 * w1;
+                v0 += v2 * w2;
+                auto w0s = w1+w2;
+                if(w0s <= 0)
+                    continue;
+                v0 /= w0s;
+
+                v = v0 - vn*0.5;
+                v *= 0.5;
+
+                move(*e->n, e->n->cp + v);
 
             }
+
 
             /*
             for(auto t : cc->ts) {
                 for(auto n : *t) {
                     Vec2 v;
                     double ws = 0.0;
+                    int count = 0;
                     for(auto e : *n->n) {
                         if(!e->line())
                             continue;
 
-                        if(e->j->t->cc == nullptr) continue;
-                        if(!(e->t->cc == cc && e->j->t->cc != cc) && !(e->t->cc != cc && e->j->t->cc == cc)) continue;
+                        if(!((e->t->cc == cc && e->j->t->cc != cc) || (e->t->cc != cc && e->j->t->cc == cc)))
+                            continue;
 
                         auto w = 0.0;
                         auto v2 = e->n->p() - cc->mid;
@@ -394,11 +421,14 @@ bool Complex::automata()
                         v += e->v() * w;
                         v += v2.unit0() * com->ev_quant * w * 5;
                         ws += w;
+                        ++count;
                     }
+
                     if(ws <= 0)
                         continue;
                     if(v.dot() <= 0)
                         continue;
+
                     v = v / ws * 0.2;
                     //v = v.unit() * com->ev_quant * 0.5;
                     move(*n->n, n->n->cp + v);
@@ -569,7 +599,7 @@ bool Complex::automata()
 
 
 
-    move_nodes();
+    //move_nodes();
 
     color_to_line();
     //purge_nonlines();
