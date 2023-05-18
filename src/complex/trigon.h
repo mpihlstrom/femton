@@ -29,6 +29,10 @@ struct Concomp {
     Vec2 eigvec2;
     double r;
     std::vector<Edge*> cnt;
+
+    Edge* cntr(int i) {
+        return cnt[(i + cnt.size() - 1) % cnt.size()];
+    }
 };
 
 struct Tri : Class, Eumetry {
