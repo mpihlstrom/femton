@@ -348,6 +348,12 @@ bool Complex::automata()
 
 
     if(true) {
+        int mean_cc_sz = 0;
+        for(auto cc : com->ccs) {
+            mean_cc_sz += cc->cnt.size();
+        }
+        mean_cc_sz /= com->ccs.size();
+
         for(auto cc : com->ccs) {
 
 
@@ -357,22 +363,24 @@ bool Complex::automata()
                 Vec2 v1 = e->v();
                 Vec2 v2 = cc->cntr(i-1)->v() * -1;
 
-                int ngh = cnt_sz / 2;
+                int ngh = (int)(500.0 / cnt_sz);//cnt_sz / 4;
                 Vec2 vn;
                 auto vnws = 0.0;
                 Vec2 pn;
                 auto pws = 0.0;
                 for(int k = 0; k < ngh; ++k) {
-                    auto pw1 = abs(v1 & cc->cntr(i+k)->v());
-                    auto pw2 = abs(v2 & cc->cntr(i-k)->v());
+                    auto pw1 = 1.0 / (cc->cntr(i+k+1)->n->p() - e->n->p()).dot();
+                    auto pw2 = 1.0 / (cc->cntr(i-k-1)->n->p() - e->n->p()).dot();
                     pn += cc->cntr(i+k)->n->p()*pw1 + cc->cntr(i-k)->n->p()*pw2;
 
                     pws += pw1+pw2;
 
                     auto vn1 = cc->cntr(i+k)->v();
                     auto vn2 = cc->cntr(i-1-k)->v() * -1;
-                    auto vnw1 = abs(v1.unit0() ^ cc->cntr(i+k)->v().unit0());
-                    auto vnw2 = abs(v2.unit0() ^ cc->cntr(i-k-1)->v().unit0());
+                    //auto vnw1 = abs(v1.unit0() ^ cc->cntr(i+k)->v().unit0()) / (cc->cntr(i+k+1)->n->p() - e->n->p()).dot();
+                    //auto vnw2 = abs(v2.unit0() ^ cc->cntr(i-k-1)->v().unit0()) / (cc->cntr(i-k-1)->n->p() - e->n->p()).dot();
+                    auto vnw1 = 1.0 / ((cc->cntr(i+k+1)->n->p() - e->n->p()).dot()+1);
+                    auto vnw2 = 1.0 / ((cc->cntr(i-k-1)->n->p() - e->n->p()).dot()+1);
                     vn += vn1 * vnw1;
                     vn += vn2 * vnw2;
                     vnws += abs(vnw1) + abs(vnw2);
@@ -396,7 +404,7 @@ bool Complex::automata()
                 v0 /= w0s;
 
                 auto v3 = (e->n->p() - pn).unit0() *com->ev_quant * 2;
-                Vec2 v = v0 - vn*0.5;
+                Vec2 v = v0 - vn*0.9;
                 v *= 0.5;
 
                 move(*e->n, e->n->cp + v);
