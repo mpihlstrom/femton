@@ -284,7 +284,7 @@ void Window::new_canvas()
 
     com->split_edge(&tris[0]->b, 0.5);
 
-    for(int k = 0; k < 3; ++k) {
+    for(int k = 0; k < 0; ++k) {
         int i = rand() % tris.size();
         Vec3 ru3(rand_uni(),rand_uni(),rand_uni());
         Vec2 ru = Vec2(Vec3(1.0)/3.0);

@@ -79,9 +79,9 @@ void Surface_render::set_buffer() {
         auto nb = t.b.n->entry()->t->color;
         auto nc = t.c.n->entry()->t->color;
 
-        na = node_color(t.a.n);
-        nb = node_color(t.b.n);
-        nc = node_color(t.c.n);
+        //na = node_color(t.a.n);
+        //nb = node_color(t.b.n);
+        //nc = node_color(t.c.n);
 
         auto cea = Col::Red; auto ceb = Col::Green; auto cec = Col::Blue;
 
