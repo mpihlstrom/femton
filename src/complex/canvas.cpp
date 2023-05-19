@@ -363,14 +363,21 @@ bool Complex::automata()
                 Vec2 v1 = e->v();
                 Vec2 v2 = cc->cntr(i-1)->v() * -1;
 
-                int ngh = (int)(500.0 / cnt_sz);//cnt_sz / 4;
+                if(e->t->type != Tri::Regular)
+                    continue;
+
+                double ew = 1.0;
+                if(e->j->t->cc != nullptr) ew = 2.0*(double)e->j->t->cc->cnt.size() / (double)(cnt_sz + e->j->t->cc->cnt.size());
+
+                //int ngh = fmin(cnt_sz/2, (int)(0.5*500.0*500.0 / (cnt_sz*cnt_sz)));//cnt_sz / 4;
+                int ngh = fmax(2, (400.0 / cnt_sz));
                 Vec2 vn;
                 auto vnws = 0.0;
                 Vec2 pn;
                 auto pws = 0.0;
                 for(int k = 0; k < ngh; ++k) {
-                    auto pw1 = 1.0 / (cc->cntr(i+k+1)->n->p() - e->n->p()).dot();
-                    auto pw2 = 1.0 / (cc->cntr(i-k-1)->n->p() - e->n->p()).dot();
+                    auto pw1 = (1.0 / (cc->cntr(i+k+1)->n->p() - e->n->p()).dot()) / (k+1);
+                    auto pw2 = (1.0 / (cc->cntr(i-k-1)->n->p() - e->n->p()).dot()) / (k+1);
                     pn += cc->cntr(i+k)->n->p()*pw1 + cc->cntr(i-k)->n->p()*pw2;
 
                     pws += pw1+pw2;
@@ -404,7 +411,7 @@ bool Complex::automata()
                 v0 /= w0s;
 
                 auto v3 = (e->n->p() - pn).unit0() *com->ev_quant * 2;
-                Vec2 v = v0 - vn*0.9;
+                Vec2 v = v0 - vn*fmax(fmin(1.0/ew, 1.0),0.5);
                 v *= 0.5;
 
                 move(*e->n, e->n->cp + v);
