@@ -316,13 +316,6 @@ void create_ccs() {
         cc->eigv = Vec2(T/2 + sq, T/2 - sq);
         cc->eigvec1 = Vec2(covar.z, cc->eigv.x - covar.x).unit();
 
-
-
-        int a = 4;
-
-
-
-
         /*
         if(!(e->t->cc == cc && e->j->t->cc != cc))
             continue;
@@ -360,28 +353,37 @@ bool Complex::automata()
 
             int cnt_sz = cc->cnt.size();
             for(int i = 0; i < cnt_sz; ++i) {
-                Vec2 v;
                 Edge* e = cc->cntr(i);
                 Vec2 v1 = e->v();
                 Vec2 v2 = cc->cntr(i-1)->v() * -1;
 
-                int ngh = cnt_sz*0.5;
+                int ngh = cnt_sz / 2;
                 Vec2 vn;
-                auto wns = 0.0;
+                auto vnws = 0.0;
+                Vec2 pn;
+                auto pws = 0.0;
                 for(int k = 0; k < ngh; ++k) {
+                    auto pw1 = abs(v1 & cc->cntr(i+k)->v());
+                    auto pw2 = abs(v2 & cc->cntr(i-k)->v());
+                    pn += cc->cntr(i+k)->n->p()*pw1 + cc->cntr(i-k)->n->p()*pw2;
+
+                    pws += pw1+pw2;
+
                     auto vn1 = cc->cntr(i+k)->v();
                     auto vn2 = cc->cntr(i-1-k)->v() * -1;
-
-                    auto wn1 = pow(abs((v1) ^ (vn1)), 2);
-                    auto wn2 = pow(abs((v2) ^ (vn2)), 2);
-
-                    vn += vn1 * wn1;
-                    vn += vn2 * wn2;
-                    wns += wn1 + wn2;
+                    auto vnw1 = abs(v1.unit0() ^ cc->cntr(i+k)->v().unit0());
+                    auto vnw2 = abs(v2.unit0() ^ cc->cntr(i-k-1)->v().unit0());
+                    vn += vn1 * vnw1;
+                    vn += vn2 * vnw2;
+                    vnws += abs(vnw1) + abs(vnw2);
                 }
-                if(wns <= 0)
+                if(pws <= 0)
                     continue;
-                vn /= wns;
+                pn /= pws;
+
+                if(vnws <= 0)
+                   continue;
+                vn /= vnws;
 
                 Vec2 v0;
                 auto w1 = 1.0;//pow(abs((v1) ^ (v3)), 1);
@@ -393,7 +395,8 @@ bool Complex::automata()
                     continue;
                 v0 /= w0s;
 
-                v = v0 - vn*0.5;
+                auto v3 = (e->n->p() - pn).unit0() *com->ev_quant * 2;
+                Vec2 v = v0 - vn*0.5;
                 v *= 0.5;
 
                 move(*e->n, e->n->cp + v);

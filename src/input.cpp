@@ -239,7 +239,7 @@ void Window::keyPressEvent(QKeyEvent *e) {
         com->delaunify();
         break;
     case Qt::Key_U:
-        com->randomize();
+        com->refract();
         break;
     case Qt::Key_H:
         load_file(get_QLineEdit_string(save_name));
