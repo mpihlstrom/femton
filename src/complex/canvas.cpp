@@ -370,11 +370,11 @@ bool Complex::automata()
                 double ew2 = 1.0;
                 if(e->j->t->cc != nullptr) {
                     ew2 = 2.0*pow((double)e->j->t->cc->cnt.size() / (double)(cnt_sz + e->j->t->cc->cnt.size()), 1);
-                    ew = 2.0*pow(cnt_sz / (double)(cnt_sz + e->j->t->cc->cnt.size()), 1);
+                    ew = 2.0*pow(cc->area / (double)(cc->area + e->j->t->cc->area), 1);
                 }
 
-                //int ngh = fmin(cnt_sz/2, (int)(0.5*500.0*500.0 / (cnt_sz*cnt_sz)));//cnt_sz / 4;
-                int ngh = fmin(cnt_sz, fmax(1, (ew*100.0 / pow(cnt_sz,0.5))));
+                //int ngh = fmin(cnt_sz, fmax(1, (ew*500.0 / pow(cnt_sz,0.5))));
+                int ngh = fmax(1, (2000.0 / pow(cnt_sz,1)));
                 Vec2 vn;
                 auto vnws = 0.0;
                 Vec2 pn;
@@ -415,7 +415,7 @@ bool Complex::automata()
                 v0 /= w0s;
 
                 auto v3 = (e->n->p() - pn).unit0() *com->ev_quant * 2;
-                Vec2 v = v0 - vn*fmax(fmin(1/ew, 1.0),0.7);
+                Vec2 v = v0 - vn*fmax(fmin(1.0/(ew), 1.0),0.0);
                 v *= 0.5;
 
                 move(*e->n, e->n->cp + v);
