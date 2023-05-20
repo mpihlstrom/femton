@@ -68,6 +68,8 @@ struct Complex {
 
     void move_nodes();
 
+    double area() { return 2*_canvas.x * 2*_canvas.y; }
+
     void move_nodes_concur();
     bool move(Node &n, Vec2i np);
     void set_node_type();
