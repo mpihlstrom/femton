@@ -113,7 +113,7 @@ Node* Complex::split(Tri &t, Vec3 u) {
 
     const int Min_ar = 0;
     int64_t ar1, ar2, ar3;
-    if((ar1 = area(na.cp, nb.cp, p2)) <= Min_ar || (ar2 = area(nb.cp, nc.cp, p2)) <= Min_ar || (ar3 = area(nc.cp, na.cp, p2)) <= Min_ar)
+    if((ar1 = Vec2i::area(na.cp, nb.cp, p2)) <= Min_ar || (ar2 = Vec2i::area(nb.cp, nc.cp, p2)) <= Min_ar || (ar3 = Vec2i::area(nc.cp, na.cp, p2)) <= Min_ar)
         return nullptr;
 
     Edge* e = &t.a;
@@ -203,7 +203,7 @@ Node* Complex::split_edge(Edge const* e, double f) {
     const int64_t ma = 0;
     //Pre-calculate areas (successful split).
     int64_t ar1, ar2, ar3, ar4;
-    if((ar1 = area(p->p_(), opi, s->p_())) <= ma || (ar2 = area(opi, r->p_(), s->p_())) <= ma || (ar3 = area(p->p_(), q->p_(), opi)) <= ma || (ar4 = area(opi, q->p_(), r->p_())) <= ma)
+    if((ar1 = Vec2i::area(p->p_(), opi, s->p_())) <= ma || (ar2 = Vec2i::area(opi, r->p_(), s->p_())) <= ma || (ar3 = Vec2i::area(p->p_(), q->p_(), opi)) <= ma || (ar4 = Vec2i::area(opi, q->p_(), r->p_())) <= ma)
         return nullptr;
 
     double ow = e->n->w_ * f + e->nxt->n->w_ * (1-f);
