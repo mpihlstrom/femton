@@ -173,15 +173,6 @@ void main() {
         //f_color = texture(gaussian_v_buffer, viewport_coord); f_color.a = 1;
     }
 
-
-    if(draw_edges == 1)
-    {
-        vec4 c = texture(edges_buffer, viewport_coord);
-        f_id = texture(edges_id_buffer, viewport_coord).r;
-        f_color = inv(h120(f_color))*c.a + f_color*(1.0-c.a);
-        //f_color = c*c.a + f_color*(1-c.a);
-    }
-
     if(draw_control_net == 1)
     {
         vec4 c0 = texture(control_net_buffer, viewport_coord);
@@ -192,11 +183,21 @@ void main() {
         f_color = c*al + f_color*(1.0-al);
     }
 
+    if(draw_edges == 1)
+    {
+        vec4 c = texture(edges_buffer, viewport_coord);
+        f_id = texture(edges_id_buffer, viewport_coord).r;
+        f_color = h120(inv(f_color))*c.a + f_color*(1.0-c.a);
+        //f_color = c*c.a + f_color*(1-c.a);
+    }
+
+
+
     if(draw_nodes == 1) {
         vec4 col = texture(nodes_buffer, viewport_coord);
         //col = vec4(1,1,1,col.a);
 
-        f_color = h120(f_color)*col.a + f_color*(1.0-col.a);
+        f_color = (h120(f_color))*col.a + f_color*(1.0-col.a);
         //float al = col.a;
         //f_color = col*al + f_color*(1.0-al);
         if(col.a != 0) {
