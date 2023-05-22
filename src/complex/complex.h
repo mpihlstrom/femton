@@ -86,7 +86,7 @@ struct Complex {
     Core::Result move_consec(Node& n, Vec2i p);
     void move_nodes_consec();
 
-    void refract();
+    void refract(int iter = 1);
     bool automata();
 
     void waste();

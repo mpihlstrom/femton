@@ -145,15 +145,17 @@ void Complex::purge_spikes()
 
 
 
-void Complex::refract()
+void Complex::refract(int iter)
 {
-    for(auto t : ts) {
-        if(t->type != Tri::Regular)
-            continue;
-        for(auto e : *t) {
-            if(e->line()) {
-                if(e->v().l2() > ev_quant*10) {
-                    split_edge(e, 0.5);
+    for(auto i = 0; i < iter; ++i) {
+        for(auto t : ts) {
+            if(t->type != Tri::Regular)
+                continue;
+            for(auto e : *t) {
+                if(e->line()) {
+                    if(e->v().l2() > ev_quant*10) {
+                        split_edge(e, 0.5);
+                    }
                 }
             }
         }
@@ -377,7 +379,7 @@ bool Complex::automata()
 
                 //int ngh = fmin(cnt_sz/2-1,fmax(2, (1.0-exp(-ew/jw*C))*cnt_sz));
                 //int ngh = fmin(ew/jw,1.0)*(cnt_sz/2-1);
-                int ngh = fmin(fmax(2,fmin(1,1.0)*cnt_sz), cnt_sz/2-1);
+                int ngh = fmin(fmax(3,fmin(ew/jw,1.0)*cnt_sz), cnt_sz*0.25-1);
                 //int ngh = (cnt_sz/2-1)*(1.0-exp(-jw/ew*50));
                 Vec2 vn;
                 auto vnws = 0.0;
@@ -387,8 +389,14 @@ bool Complex::automata()
                     if(cc->cntr(i+k)->j->t->cc == nullptr || cc->cntr(i-k-1)->j->t->cc == nullptr) continue;
                     double jfw = cc->cntr(i+k)->j->t->cc->area;
                     double jbw = cc->cntr(i-k-1)->j->t->cc->area;
-                    double abc1 = fmax(0.0,fmin(jfw/ew,50.0));//(1.0-exp(-jfw/ew*C));
-                    double abc2 = fmax(0.0,fmin(jbw/ew,50.0));//(1.0-exp(-jbw/ew*C));
+                    double abc1 = fmax(0.0,fmin(jfw/ew,500.0));//(1.0-exp(-jfw/ew*C));
+                    double abc2 = fmax(0.0,fmin(jbw/ew,500.0));//(1.0-exp(-jbw/ew*C));
+
+                    auto vf = cc->cntr(i+k)->v();
+                    auto vb = cc->cntr(i-k-1)->v();
+
+                    auto bbb1 = fabs(vf.unit0() & (cc->mid - cc->cntr(i+k)->j->t->cc->mid).unit0());
+                    auto bbb2 = fabs(vb.unit0() & (cc->mid - cc->cntr(i-k-1)->j->t->cc->mid).unit0());
 
                     auto pw1 = (1.0 / ((cc->cntr(i+k+1)->n->p() - e->n->p()).dot() + 1)) * abc1;
                     auto pw2 = (1.0 / ((cc->cntr(i-k-1)->n->p() - e->n->p()).dot() + 1)) * abc2;
@@ -478,6 +486,8 @@ bool Complex::automata()
         }
         move_nodes();
         delaunify();
+        //purge_nonlines();
+        purge_straight_lines();
     }
 
 /*

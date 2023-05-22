@@ -293,9 +293,7 @@ void Window::new_canvas()
     com->colb = ts[1]->color = ts[4]->color = Col::random();
     com->colc = ts[3]->color = Col::random();
     com->color_to_line();
-    com->refract();
-    com->refract();
-    com->refract();
+    com->refract(5);
     com->delaunify();
     com->color_to_line();
     /*
