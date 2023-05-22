@@ -371,12 +371,14 @@ bool Complex::automata()
                 if(e->j->t->cc != nullptr) {
                     ew = e->j->t->cc->area;
                     jw = (double)e->j->t->cc->area;
+                } else continue;
 
-                }
+                double C = 8.0;
 
-                //int ngh = fmin(cnt_sz,fmax(2, 5000/((ew2/ew1)*cnt_sz)));
+                //int ngh = fmin(cnt_sz/2-1,fmax(2, (1.0-exp(-ew/jw*C))*cnt_sz));
                 //int ngh = fmin(ew/jw,1.0)*(cnt_sz/2-1);
-                int ngh = cnt_sz/2-1;
+                int ngh = fmin(fmax(2,fmin(1,1.0)*cnt_sz), cnt_sz/2-1);
+                //int ngh = (cnt_sz/2-1)*(1.0-exp(-jw/ew*50));
                 Vec2 vn;
                 auto vnws = 0.0;
                 Vec2 pn;
@@ -385,35 +387,41 @@ bool Complex::automata()
                     if(cc->cntr(i+k)->j->t->cc == nullptr || cc->cntr(i-k-1)->j->t->cc == nullptr) continue;
                     double jfw = cc->cntr(i+k)->j->t->cc->area;
                     double jbw = cc->cntr(i-k-1)->j->t->cc->area;
+                    double abc1 = fmax(0.0,fmin(jfw/ew,50.0));//(1.0-exp(-jfw/ew*C));
+                    double abc2 = fmax(0.0,fmin(jbw/ew,50.0));//(1.0-exp(-jbw/ew*C));
 
-                    auto pw1 = (1.0 / ((cc->cntr(i+k+1)->n->p() - e->n->p()).l2() + 1)) * (k+1);
-                    auto pw2 = (1.0 / ((cc->cntr(i-k-1)->n->p() - e->n->p()).l2() + 1)) * (k+1);
+                    auto pw1 = (1.0 / ((cc->cntr(i+k+1)->n->p() - e->n->p()).dot() + 1)) * abc1;
+                    auto pw2 = (1.0 / ((cc->cntr(i-k-1)->n->p() - e->n->p()).dot() + 1)) * abc2;
                     pn += cc->cntr(i+k)->n->p()*pw1 + cc->cntr(i-k)->n->p()*pw2;
                     pws += pw1+pw2;
 
-
                     auto vn1 = cc->cntr(i+k)->v();
                     auto vn2 = cc->cntr(i-1-k)->v() * -1;
-                    //auto vnw1 = abs(v1 ^ cc->cntr(i+k)->v())   / ((cc->cntr(i+k+1)->n->p() - e->n->p()).l2() + 1.0);
-                    //auto vnw2 = abs(v2 ^ cc->cntr(i-k-1)->v()) / ((cc->cntr(i-k-1)->n->p() - e->n->p()).l2() + 1.0);
-                    auto vnw1 = (1.0 / ((cc->cntr(i+k+1)->n->p() - e->n->p()).dot()+1)) * fmin(jfw/ew,25.0);
-                    auto vnw2 = (1.0 / ((cc->cntr(i-k-1)->n->p() - e->n->p()).dot()+1)) * fmin(jbw/ew,25.0);
+                    //auto vnw1 = abs(v1 ^ cc->cntr(i+k)->v())   / ((cc->cntr(i+k+1)->n->p() - e->n->p()).dot() + 1.0) * abc1;
+                    //auto vnw2 = abs(v2 ^ cc->cntr(i-k-1)->v()) / ((cc->cntr(i-k-1)->n->p() - e->n->p()).dot() + 1.0) * abc2;
+                    auto vnw1 = (1.0 / ((cc->cntr(i+k+1)->n->p() - e->n->p()).dot()+1)) * abc1;
+                    auto vnw2 = (1.0 / ((cc->cntr(i-k-1)->n->p() - e->n->p()).dot()+1)) * abc2;
                     vn += vn1 * vnw1;
                     vn += vn2 * vnw2;
                     vnws += vnw1+ vnw2;
                 }
 
-//                if(pws <= 0)
-//                    continue;
-//                pn /= pws;
+
+                /*
+                if(pws <= 0)
+                    continue;
+                pn /= pws;
+                */
+
 
                 if(vnws <= 0)
                    continue;
                 vn /= vnws;
 
+                auto v3 = (e->n->p() - pn).unit0() *com->ev_quant * 1.5;
                 Vec2 v0;
-                auto w1 = 1.0;//pow(abs((v1) ^ (v3)), 1);
-                auto w2 = 1.0;//pow(abs((v2) ^ (v3)), 1);
+                auto w1 = 1.0;//pow(abs((v1.unit0()) ^ (v3.unit0())), 1);
+                auto w2 = 1.0;//pow(abs((v2.unit0()) ^ (v3.unit0())), 1);
                 v0 += v1 * w1;
                 v0 += v2 * w2;
                 auto w0s = w1+w2;
@@ -421,10 +429,12 @@ bool Complex::automata()
                     continue;
                 v0 /= w0s;
 
+                //if((e->t->color == com->cola && e->j->t->color   == com->colb)
+                //|| (e->t->color == com->colb && e->j->t->color   == com->colc)
+                //|| (e->t->color == com->colc && e->j->t->color   == com->cola)) v+= v3;
 
-                auto v3 = (e->n->p() - pn).unit0() *com->ev_quant * 1.5;
-                Vec2 v = v0 - vn*fmax(fmin(ew/jw, 1.0),0.0)*1.0;
-                //Vec2 v = v0 + v3*fmax(fmin((ew2/ew1), 1.0),0.0)*1.0;
+                auto abc = fabs(vn.unit0() & (cc->mid - e->j->t->cc->mid).unit0());
+                Vec2 v = v0 - vn*abc*fmax(fmin(jw/ew, 1.0),0.1);//(1.0-exp(-jw/ew*C));//
                 v *= 0.5;
 
                 move(*e->n, e->n->cp + v);

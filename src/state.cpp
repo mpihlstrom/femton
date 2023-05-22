@@ -150,6 +150,14 @@ Complex* State::load() {
 		n.setentry(index_trigon_map[filenode.entry_ti]->edge((Tri::Label)filenode.entry_label));
 	}
 
+    /*Very temporary!*/
+    std::vector<Tri*> ts;
+    for(auto t : cmplx->ts)
+        ts.push_back(t);
+    cmplx->cola = ts[0]->color;
+    cmplx->colb = ts[1]->color;
+    cmplx->colc = ts[3]->color;
+
     return cmplx;
 }
 

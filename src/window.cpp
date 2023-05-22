@@ -282,8 +282,24 @@ void Window::new_canvas()
 */
 
 
+    Node* n = com->split_edge(&tris[0]->b, 0.5);
+    com->split_edge(&tris[0]->a, 0.5);
+    com->move(*n, Vec2i(n->cp.x, -com->_canvas.y/3));
+    com->move_nodes();
+    std::vector<Tri*> ts;
+    for(auto t : com->ts)
+        ts.push_back(t);
+    com->cola = ts[0]->color = ts[2]->color = Col::random();
+    com->colb = ts[1]->color = ts[4]->color = Col::random();
+    com->colc = ts[3]->color = Col::random();
+    com->color_to_line();
+    com->refract();
+    com->refract();
+    com->refract();
+    com->delaunify();
+    com->color_to_line();
+    /*
     com->split_edge(&tris[0]->b, 0.5);
-
     for(int k = 0; k < 0; ++k) {
         int i = rand() % tris.size();
         Vec3 ru3(rand_uni(),rand_uni(),rand_uni());
@@ -298,12 +314,13 @@ void Window::new_canvas()
                 tris.push_back(e->t);
         }
     }
-
-
     com->move_nodes();
     com->delaunify();
     com->randomize();
     com->color_to_line();
+    */
+
+
     com->purge();
     draw->update();
 }

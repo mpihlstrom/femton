@@ -124,6 +124,8 @@ struct Complex {
 
     Move move_mode;
 
+    Col cola, colb, colc;
+
 private:
 	static bool jt_inside_circumcircle(Edge* e);
 public:
