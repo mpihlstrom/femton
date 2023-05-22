@@ -296,6 +296,7 @@ void Window::new_canvas()
     com->refract(5);
     com->delaunify();
     com->color_to_line();
+
     /*
     com->split_edge(&tris[0]->b, 0.5);
     for(int k = 0; k < 0; ++k) {
@@ -313,10 +314,13 @@ void Window::new_canvas()
         }
     }
     com->move_nodes();
-    com->delaunify();
     com->randomize();
     com->color_to_line();
+    com->refract(5);
+    com->delaunify();
     */
+
+
 
 
     com->purge();

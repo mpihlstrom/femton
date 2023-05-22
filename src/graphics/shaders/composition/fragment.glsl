@@ -197,7 +197,7 @@ void main() {
         vec4 col = texture(nodes_buffer, viewport_coord);
         //col = vec4(1,1,1,col.a);
 
-        f_color = (h120(f_color))*col.a + f_color*(1.0-col.a);
+        f_color = h120((f_color))*col.a + f_color*(1.0-col.a);
         //float al = col.a;
         //f_color = col*al + f_color*(1.0-al);
         if(col.a != 0) {
