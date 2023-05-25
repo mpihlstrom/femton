@@ -192,13 +192,13 @@ void Window::keyPressEvent(QKeyEvent *e) {
 
     case Qt::Key_E:
     {
-        int i = 0;
+        int i = 12002;
         dump_canvas2(std::to_string(++i));
         while(true) {
             com->automata();
             dump_canvas2(std::to_string(++i));
             Sleep(30);
-            if(i > 12001)
+            if(i > 12001*2)
                 break;
         }
         dump_canvas2(std::to_string(++i));
