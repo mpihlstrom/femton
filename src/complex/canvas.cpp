@@ -219,22 +219,20 @@ struct Link
     Link* prv;
 };
 
-bool contour_recursive(Concomp* cc, Edge* cur, Edge* start, Col rc) {
+bool contour_recursive(Concomp* cc, Edge* cur, Edge* start) {
     Node* n = cur->nxt->n;
     if(cc->ts.size()*3 < cc->cnt.size()) {
         myDebug() << "bad size";
         return false;
     }
     Edge* nxt = nullptr;
-    for(auto e : *n) {
+    for(auto ei = n->begin(); ei != n->end(); ++ei) {
+        Edge* e = *ei;
         if(e->t->cc == cc && e->j->t->cc != cc) {
-            if(e == start) {
-                //e->t->color = Col::Red;
+            if(e == start)
                 return true;
-            }
-
             Edge* prv = nullptr;
-            for(auto f = Node::iterator(e); f != Node::iterator(e); ++f) {
+            for(auto f = Node::iterator(e); f != Node::iterator(e); ++f, ++ei) {
                 if((*f)->t->cc != cc) {
                     prv = *f;
                     break;
@@ -251,8 +249,7 @@ bool contour_recursive(Concomp* cc, Edge* cur, Edge* start, Col rc) {
     if(nxt == nullptr)
         return false;
     cc->cnt.push_back(nxt);
-    return contour_recursive(cc, nxt, start, rc*1.01);
-    return false;
+    return contour_recursive(cc, nxt, start);
 }
 
 
@@ -298,9 +295,8 @@ void create_ccs() {
         }
         end:
         if(start != nullptr) {
-            auto rc = start->t->color*0.1;
             cc->cnt.push_back(start);
-            auto ret = contour_recursive(cc, start, start, rc);
+            auto ret = contour_recursive(cc, start, start);
             if(!ret) {
                 cc->cnt.clear();
                 myDebug() << "bad contour";
@@ -405,7 +401,7 @@ bool Complex::automata()
 
                 //int ngh = fmin(cnt_sz/2-1,fmax(2, (1.0-exp(-ew/jw*C))*cnt_sz));
                 //int ngh = fmin(ew/jw,1.0)*(cnt_sz/2-1);
-                int ngh = fmin(fmax(3,fmin(1,1.0)*500/cnt_sz), cnt_sz*0.5-1);
+                int ngh = fmin(fmax(3,4), cnt_sz*0.5-1);
                 //int ngh = (cnt_sz/2-1)*(1.0-exp(-jw/ew*50));
                 Vec2 vn;
                 auto vnws = 0.0;
@@ -449,8 +445,8 @@ bool Complex::automata()
                     auto ee1 = fmax(0, 1 + (pd.unit0() ^ p_pn1.unit0()));
                     auto ee2 = fmax(0, 1 + (pd.unit0() ^ p_pn2.unit0()));
 
-                    auto pw1 = (1.0 / (p_pn1.l2()+1.0)) * (mn_pn1.l2()) * (m_pn1.l2());
-                    auto pw2 = (1.0 / (p_pn2.l2()+1.0)) * (mn_pn2.l2()) * (m_pn2.l2());
+                    auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * (mn_pn1.dot()) * (m_pn1.dot()) * abc1;
+                    auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * (mn_pn2.dot()) * (m_pn2.dot()) * abc2;
                     pn += pn1*pw1 + pn2*pw2;
                     pws += pw1+pw2;
 
@@ -475,12 +471,12 @@ bool Complex::automata()
                    continue;
                 vn /= vnws;
 
-                auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2.5;//vn.l2();//
+                auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2.0;//vn.l2();//
                 //auto abc = fabs(vn.unit0() & (e->t->cc->mid - e->j->t->cc->mid).unit0());
                 auto abc = 1 - (v1.unit0() & v2.unit0());//fabs(vn.unit0() & v3.unit0());
-                Vec2 v = v0 - v3;//v0 = v0.unit0() * com->ev_quant * 0.5;
+                Vec2 v = v0 - v3*fmin(we/wj,1);//v0 = v0.unit0() * com->ev_quant * 0.5;
                 //Vec2 v = v0 - vn;//fmax(fmin(pow(wj/we,2), 1.0),0.1);//(1.0-exp(-jw/ew*C));//
-                v *= 0.66;
+                v *= 0.75;
 
                 move(*e->n, e->n->cp + v);
 
