@@ -263,11 +263,9 @@ void create_ccs() {
     for(auto cc : com->ccs) {
         for(auto t : cc->ts) {
             cc->area += t->area();
-            cc->mid += t->centroid();//*t->area();
+            cc->mid += t->centroid();
         }
         cc->mid /= cc->ts.size();
-
-        //for(auto e : cc->cnt) cc->peri += e->v().l2();
 
         Vec3 covar;
         for(auto t : cc->ts) {
@@ -359,7 +357,7 @@ bool Complex::automata()
             auto pws = 0.0;
             auto dws = 0.0;
 
-            int ngh2 = 150;
+            int ngh2 = 100;
 
             Vec2 mid;
             auto midws = 0.0;
@@ -371,18 +369,16 @@ bool Complex::automata()
             }
             mid /= midws;
 
-
-
             Vec2 midj1;
             auto midj1ws = 0.0;
-            auto j1 = cntr[i]->j->cont(1);
+            auto j1 = cntr[i]->j->relcntr(1);
             if(j1->cntr == nullptr) {
                 j1->t->color = Col::random();
                 continue;
             }
             for(int k = 0; k < fmin(j1->cntr->sz(), ngh2); ++k) {//j1->contour->sz()/4+1; ++k) {
                 auto w = 1.0;
-                midj1 += j1->cont(k)->n->p() * w;
+                midj1 += j1->relcntr(k)->n->p() * w;
                 midj1ws += w;
             }
             midj1 /= midj1ws;
@@ -397,7 +393,7 @@ bool Complex::automata()
             }
             for(int k = 0; k < fmin(j2->cntr->sz(), ngh2); ++k) {//j2->contour->sz()/4+1; ++k) {
                 auto w = 1.0;
-                midj2 += j2->cont(-k)->n->p() * w;
+                midj2 += j2->relcntr(-k)->n->p() * w;
                 midj2ws += w;
             }
             midj2 /= midj2ws;
@@ -422,10 +418,10 @@ bool Complex::automata()
                 auto pn2 = cntr[i-k-1]->n->p();
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
-                auto mn_pn1 = pn1 - midj1;//cntr[i-k-1]->j->t->cc->mid;//cntr[i+0]->j->t->cc->mid;//
-                auto mn_pn2 = pn2 - midj2;//cntr[i+k+0]->j->t->cc->mid;//cntr[i-1]->j->t->cc->mid;//
-                auto m_pn1 = pn1 - mid;//e->t->cc->mid;
-                auto m_pn2 = pn2 - mid;//e->t->cc->mid;
+                auto mj_pn1 = pn1 - midj1;//cntr[i+0]->j->t->cc->mid;//cntr[i+k+0]->j->t->cc->mid;//
+                auto mj_pn2 = pn2 - midj2;//cntr[i-1]->j->t->cc->mid;//cntr[i-k-1]->j->t->cc->mid;//
+                auto m_pn1 = pn1 - mid;//e->t->cc->mid;//mid;//;
+                auto m_pn2 = pn2 - mid;//e->t->cc->mid;//mid;//;
                 //auto m_mn1 = cc->cntr(i+k)->j->t->cc->mid - cc->mid;
                 //auto m_mn2 = cc->cntr(i-k-1)->j->t->cc->mid - cc->mid;
 
@@ -445,8 +441,8 @@ bool Complex::automata()
                 //auto ee1 = fmax(0, 1 + (pd.unit0() ^ p_pn1.unit0()));
                 //auto ee2 = fmax(0, 1 + (pd.unit0() ^ p_pn2.unit0()));
 
-                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * (mn_pn1.dot()) * (m_pn1.dot());
-                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * (mn_pn2.dot()) * (m_pn2.dot());
+                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * (mj_pn1.dot()) * (m_pn1.dot());
+                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * (mj_pn2.dot()) * (m_pn2.dot());
                 pn += pn1*pw1 + pn2*pw2;
                 pws += pw1+pw2;
 

@@ -296,8 +296,11 @@ void Window::new_canvas()
     com->delaunify();
     com->color_to_line();
 
+
     /*
+    Node* n = com->split_edge(&tris[0]->b, 0.5);
     com->move(*n, Vec2i(n->cp.x, -com->_canvas.y/3));
+    com->split_edge(&tris[0]->a, 0.5);
     com->move_nodes();
     std::vector<Tri*> ts;
     for(auto t : com->ts)
@@ -309,7 +312,7 @@ void Window::new_canvas()
     com->refract(5);
     com->delaunify();
     com->color_to_line();
-    */
+*/
 
     /*
     com->split_edge(&tris[0]->b, 0.5);

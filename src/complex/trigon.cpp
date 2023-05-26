@@ -368,7 +368,7 @@ void Tri::retire_w_ns() {
 }
 
 
-Edge* Edge::cont(int i) {return cntr->index(cntr_index + i); }
+Edge* Edge::relcntr(int i) { return (*cntr)[cntr_index + i]; }
 
 
 

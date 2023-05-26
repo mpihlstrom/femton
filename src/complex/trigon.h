@@ -36,7 +36,6 @@ struct Contour {
         e->cntr_index = cntr.size() - 1;
     }
     Edge* operator[](int i) { return cntr[(i + cntr.size() - 1) % cntr.size()]; }
-    Edge* index(int i) { return cntr[(i + cntr.size() - 1) % cntr.size()]; }
     int sz() { return count(); }
     int count() { return cntr.size(); }
     std::vector<Edge*> cntr;

@@ -21,7 +21,7 @@ struct Edge {
 	void link(Edge* e);
     void operator^=(double w);
     void operator|=(double w);
-    Edge* cont(int i);
+    Edge* relcntr(int i);
 
 	Node* n;
 	Edge* j; //adjacent (side-to-side) edge.
