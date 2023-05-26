@@ -191,10 +191,14 @@ void purge_nonlines_recursive() {
     }
 }
 
+//pre-condition: e->j is in cc
 void recursive_fill(Concomp* cc, Edge* e) {
-    if(e->t->type != Tri::Regular) { return; }
-    if(e->line())  { return; }
+    if(e->line()) {
+        cc->cnt_entry = e->j;
+        return;
+    }
     if(e->t->cc != nullptr)  { return; }
+    if(e->t->type != Tri::Regular) return;
     cc->ts.push_back(e->t);
     e->t->cc = cc;
     recursive_fill(cc, e->nxt->j);
@@ -212,14 +216,7 @@ void populate_neighbors(Tri* t) {
     }
 }
 
-struct Link
-{
-    Edge* e;
-    Link* nxt;
-    Link* prv;
-};
-
-bool contour_recursive(Concomp* cc, Edge* cur, Edge* start) {
+bool contour_recursive(Concomp* cc, Edge* cur) {
     Node* n = cur->nxt->n;
     if(cc->ts.size()*3 < cc->cnt.size()) {
         myDebug() << "bad size";
@@ -230,13 +227,13 @@ bool contour_recursive(Concomp* cc, Edge* cur, Edge* start) {
         Edge* e = *ei;
         if(nxt == nullptr) {
             if(e->t->cc == cc && e->j->t->cc != cc) {
-                if(e == start)
+                if(e == cc->cnt_entry)
                     return true;
                 nxt = e;
             }
         }
         else if(e->t->cc != cc) {
-            if(e->nxt->n == cur->n)
+            if(e->j == cur)
                 break;
             nxt = nullptr;
         }
@@ -244,7 +241,7 @@ bool contour_recursive(Concomp* cc, Edge* cur, Edge* start) {
     if(nxt == nullptr) //should not happen
         return false;
     cc->cnt.push_back(nxt);
-    return contour_recursive(cc, nxt, start);
+    return contour_recursive(cc, nxt);
 }
 
 
@@ -265,44 +262,21 @@ void create_ccs() {
         com->ccs.push_back(cc);
     }
     for(auto cc : com->ccs) {
-        //auto rc = Col::random();
         for(auto t : cc->ts) {
             cc->area += t->area();
             cc->mid += t->centroid();//*t->area();
-            for(auto e : *t) {
-                if(e->line())  {
-                    cc->peri += e->v().l2();
-                }
-            }
         }
         cc->mid /= cc->ts.size();
-    }
-    for(auto cc : com->ccs) {
 
-        Edge* start = nullptr;
-        for(auto t : cc->ts) {
-            for(auto e : *t) {
-                if(e->t->cc == cc && e->j->t->cc != cc) {
-                    start = e;
-                    goto end;
-                }
-            }
-        }
-        end:
-        if(start != nullptr) {
-            cc->cnt.push_back(start);
-            auto ret = contour_recursive(cc, start, start);
-            if(!ret) {
-                cc->cnt.clear();
-                myDebug() << "bad contour";
-            } else {
-                //myDebug() << "good contour";
-            }
-        } else {
-            myDebug() << "no start";
+        cc->cnt.push_back(cc->cnt_entry);
+        auto ret = contour_recursive(cc, cc->cnt_entry);
+        if(!ret) {
+            cc->cnt.clear();
+            myDebug() << "bad contour";
         }
 
-
+        for(auto e : cc->cnt)
+            cc->peri += e->v().l2();
 
         Vec3 covar;
         for(auto t : cc->ts) {
@@ -389,7 +363,7 @@ bool Complex::automata()
 
             //int ngh = fmin(cnt_sz/2-1,fmax(2, (1.0-exp(-ew/jw*C))*cnt_sz));
             //int ngh = fmin(ew/jw,1.0)*(cnt_sz/2-1);
-            int ngh = 2;//fmin(cnt_sz*0.5-1);
+            int ngh = 4;//fmin(cnt_sz*0.5-1);
             //int ngh = (cnt_sz/2-1)*(1.0-exp(-jw/ew*50));
             Vec2 vn;
             auto vnws = 0.0;
@@ -461,9 +435,9 @@ bool Complex::automata()
             vn /= vnws;
             */
 
-            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 3.0;//vn.l2();//
+            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2.0;//vn.l2();//
             //auto abc = fabs(vn.unit0() & (e->t->cc->mid - e->j->t->cc->mid).unit0());
-            auto abc = 1 - (v1.unit0() & v2.unit0());//fabs(vn.unit0() & v3.unit0());
+            //auto abc = fabs(v1.unit0() & v2.unit0());//fabs(vn.unit0() & v3.unit0());
             Vec2 v = v0 - v3;//*fmax(fmin(we/wj,1),0.5);//v0 = v0.unit0() * com->ev_quant * 0.5;
             //Vec2 v = v0 - vn;//fmax(fmin(pow(wj/we,2), 1.0),0.1);//(1.0-exp(-jw/ew*C));//
             v *= 0.75;

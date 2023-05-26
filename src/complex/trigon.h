@@ -28,6 +28,7 @@ struct Concomp {
     Vec2 eigvec1;
     Vec2 eigvec2;
     double r;
+    Edge* cnt_entry;
     std::vector<Edge*> cnt;
 
     Edge* cntr(int i) {
