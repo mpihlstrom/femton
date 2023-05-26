@@ -6,6 +6,7 @@
 
 struct Tri;
 struct Node;
+struct Contour;
 
 struct Edge {
 	Edge();
@@ -40,7 +41,7 @@ struct Edge {
     mutable double o2;
     mutable double cost;
 
-    std::vector<Edge*> *cntr;
+    Contour *cntr;
 };
 
 

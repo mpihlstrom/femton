@@ -193,11 +193,8 @@ void purge_nonlines_recursive() {
 
 //pre-condition: e->j is in cc
 void recursive_fill(Concomp* cc, Edge* e) {
-    if(e->line()) {
-        cc->cnt_entry = e->j;
-        return;
-    }
     if(e->t->cc != nullptr)  { return; }
+    if(e->line()) return;
     if(e->t->type != Tri::Regular) return;
     cc->ts.push_back(e->t);
     e->t->cc = cc;
@@ -216,11 +213,8 @@ void populate_neighbors(Tri* t) {
     }
 }
 
-bool contour_recursive(std::vector<Edge*> *cntr, Edge* cur, Edge* start) {
+bool contour_recursive(Contour *cntr, Edge* cur, Edge* start) {
     Node* n = cur->nxt->n;
-    if(cntr->size() > 10000) {
-        return false;
-    }
     Edge* nxt = nullptr;
     for(auto ei = n->begin(); ei != n->end(); ++ei) {
         Edge* e = *ei;
@@ -239,8 +233,7 @@ bool contour_recursive(std::vector<Edge*> *cntr, Edge* cur, Edge* start) {
     }
     if(nxt == nullptr) //should not happen
         return false;
-    cntr->push_back(nxt);
-    nxt->cntr = cntr;
+    cntr->add(nxt);
     return contour_recursive(cntr, nxt, start);
 }
 
@@ -294,37 +287,17 @@ void create_ccs() {
         cc->r = covar.z / (sqrt(covar.x)*sqrt(covar.y));
         cc->eigv = Vec2(T/2 + sq, T/2 - sq);
         cc->eigvec1 = Vec2(covar.z, cc->eigv.x - covar.x).unit();
-
-        /*
-        if(!(e->t->cc == cc && e->j->t->cc != cc))
-            continue;
-        auto end = Node::iterator(e);
-        Edge* g = nullptr;
-        for(auto f = Node::iterator(e); f != end; ++f) {
-            if(((*f)->t->cc != cc && (*f)->j->t->cc == cc)) {
-               g = *f;
-               break;
-            }
-        }
-        if(g == nullptr)
-            continue;
-        auto ww = abs(e->v().unit0() ^ g->v().unit0());
-        v += g->v() * w;
-        */
     }
 
     for(auto t : com->ts) {
         for(auto e : *t) {
-            if(e->t->cc != e->j->t->cc) {
-                if(e->cntr == nullptr) {
-                    auto cntr = new std::vector<Edge*>;
-                    com->cntrs.push_back(cntr);
-                    cntr->push_back(e);
-                    e->cntr = cntr;
-                    auto ret = contour_recursive(cntr, e, e);
-                    if(!ret) {
-                        myDebug() << "bad contour";
-                    }
+            if(e->cntr == nullptr && e->t->cc != e->j->t->cc) {
+                auto cntr = new Contour;
+                com->cntrs.push_back(cntr);
+                cntr->add(e);
+                auto ret = contour_recursive(cntr, e, e);
+                if(!ret) {
+                    myDebug() << "bad contour";
                 }
             }
         }
@@ -347,12 +320,13 @@ bool Complex::automata()
     color_to_line();
     create_ccs();
 
-    for(auto cntr : com->cntrs) {
-        int cnt_sz = cntr->size();
+    for(auto cntr_p : com->cntrs) {
+        Contour &cntr = *cntr_p;
+        int cnt_sz = cntr.count();
         for(int i = 0; i < cnt_sz; ++i) {
-            Edge* e = idx(cntr,i);
+            Edge* e = cntr(i);
             Vec2 v1 = e->v();
-            Vec2 v2 = idx(cntr,i-1)->v() * -1;
+            Vec2 v2 = cntr(i-1)->v() * -1;
 
             //auto pd = cc->cntr(i+1)->n->p() - cc->cntr(i-1)->n->p();
 
@@ -380,7 +354,7 @@ bool Complex::automata()
 
             //int ngh = fmin(cnt_sz/2-1,fmax(2, (1.0-exp(-ew/jw*C))*cnt_sz));
             //int ngh = fmin(ew/jw,1.0)*(cnt_sz/2-1);
-            int ngh = 4;//fmin(cnt_sz*0.5-1);
+            int ngh = 4;//fmin(fmax(3, 1500.0/cnt_sz), cnt_sz*0.5-1);
             //int ngh = (cnt_sz/2-1)*(1.0-exp(-jw/ew*50));
             Vec2 vn;
             auto vnws = 0.0;
@@ -389,7 +363,7 @@ bool Complex::automata()
             auto dws = 0.0;
 
             for(int k = 0; k < ngh; ++k) {
-                if(idx(cntr,i+k)->j->t->cc == nullptr || idx(cntr,(i-k-1))->j->t->cc == nullptr) continue;
+                if(cntr(i+k)->j->t->cc == nullptr || cntr(i-k-1)->j->t->cc == nullptr) continue;
                 //double wj1 = cc->cntr(i+k)->j->t->cc->area;
                 //double wj2 = cc->cntr(i-k-1)->j->t->cc->area;
                 //double abc1 = fmax(0.0,fmin(we/wj1,1.0));//(1.0-exp(-jfw/ew*C));
@@ -397,12 +371,12 @@ bool Complex::automata()
 
                 //auto vn1 = cc->cntr(i+k)->v();
                 //auto vn2 = cc->cntr(i-k-1)->v() * -1;
-                auto pn1 = idx(cntr,i+k+1)->n->p();
-                auto pn2 = idx(cntr,i-k-1)->n->p();
+                auto pn1 = cntr(i+k+1)->n->p();
+                auto pn2 = cntr(i-k-1)->n->p();
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
-                auto mn_pn1 = pn1 - idx(cntr,i+k)->j->t->cc->mid;
-                auto mn_pn2 = pn2 - idx(cntr,i-k-1)->j->t->cc->mid;
+                auto mn_pn1 = pn1 - cntr(i+k)->j->t->cc->mid;
+                auto mn_pn2 = pn2 - cntr(i-k-1)->j->t->cc->mid;
                 auto m_pn1 = pn1 - e->t->cc->mid;
                 auto m_pn2 = pn2 - e->t->cc->mid;
                 //auto m_mn1 = cc->cntr(i+k)->j->t->cc->mid - cc->mid;
@@ -437,10 +411,6 @@ bool Complex::automata()
                 vn += p_pn2 * vnw2;
                 vnws += vnw1 + vnw2;
             }
-
-            if(ngh <= 0)
-                continue;
-            dws /= ngh*2;
 
             if(pws <= 0)
                 continue;

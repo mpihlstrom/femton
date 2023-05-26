@@ -28,12 +28,17 @@ struct Concomp {
     Vec2 eigvec1;
     Vec2 eigvec2;
     double r;
-    Edge* cnt_entry;
-    std::vector<Edge*> cnt;
+};
 
-    Edge* cntr(int i) {
-        return cnt[(i + cnt.size() - 1) % cnt.size()];
+struct Contour {
+    void add(Edge* e) {
+        cntr.push_back(e);
+        e->cntr = this;
     }
+    Edge* operator()(int i) { return cntr[(i + cntr.size() - 1) % cntr.size()]; }
+    int sz() { return count(); }
+    int count() { return cntr.size(); }
+    std::vector<Edge*> cntr;
 };
 
 struct Tri : Class, Eumetry {
