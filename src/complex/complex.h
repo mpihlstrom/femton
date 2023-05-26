@@ -137,6 +137,7 @@ public:
     Vec2i _canvas;
 
     std::vector<Concomp*> ccs;
+    std::vector<std::vector<Edge*>*> cntrs;
 
     int count;
 };

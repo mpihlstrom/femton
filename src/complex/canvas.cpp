@@ -216,23 +216,22 @@ void populate_neighbors(Tri* t) {
     }
 }
 
-bool contour_recursive(Concomp* cc, Edge* cur) {
+bool contour_recursive(std::vector<Edge*> *cntr, Edge* cur, Edge* start) {
     Node* n = cur->nxt->n;
-    if(cc->ts.size()*3 < cc->cnt.size()) {
-        myDebug() << "bad size";
+    if(cntr->size() > 10000) {
         return false;
     }
     Edge* nxt = nullptr;
     for(auto ei = n->begin(); ei != n->end(); ++ei) {
         Edge* e = *ei;
         if(nxt == nullptr) {
-            if(e->t->cc == cc && e->j->t->cc != cc) {
-                if(e == cc->cnt_entry)
+            if(e->t->cc == start->t->cc && e->j->t->cc != start->t->cc) {
+                if(e == start)
                     return true;
                 nxt = e;
             }
         }
-        else if(e->t->cc != cc) {
+        else if(e->t->cc != start->t->cc) {
             if(e->j == cur)
                 break;
             nxt = nullptr;
@@ -240,17 +239,24 @@ bool contour_recursive(Concomp* cc, Edge* cur) {
     }
     if(nxt == nullptr) //should not happen
         return false;
-    cc->cnt.push_back(nxt);
-    return contour_recursive(cc, nxt);
+    cntr->push_back(nxt);
+    nxt->cntr = cntr;
+    return contour_recursive(cntr, nxt, start);
 }
 
 
 void create_ccs() {
+    for(auto c : com->cntrs)
+        delete c;
+    com->cntrs.clear();
     for(auto cc : com->ccs)
         delete cc;
     com->ccs.clear();
-    for(auto t : com->trigons)
+    for(auto t : com->trigons) {
+        for(auto e : *t)
+            e->cntr = nullptr;
         t->cc = nullptr;
+    }
     for(auto t : com->ts) {
         if(t->cc != nullptr)
             continue;
@@ -268,15 +274,7 @@ void create_ccs() {
         }
         cc->mid /= cc->ts.size();
 
-        cc->cnt.push_back(cc->cnt_entry);
-        auto ret = contour_recursive(cc, cc->cnt_entry);
-        if(!ret) {
-            cc->cnt.clear();
-            myDebug() << "bad contour";
-        }
-
-        for(auto e : cc->cnt)
-            cc->peri += e->v().l2();
+        //for(auto e : cc->cnt) cc->peri += e->v().l2();
 
         Vec3 covar;
         for(auto t : cc->ts) {
@@ -313,9 +311,31 @@ void create_ccs() {
         auto ww = abs(e->v().unit0() ^ g->v().unit0());
         v += g->v() * w;
         */
-
-
     }
+
+    for(auto t : com->ts) {
+        for(auto e : *t) {
+            if(e->t->cc != e->j->t->cc) {
+                if(e->cntr == nullptr) {
+                    auto cntr = new std::vector<Edge*>;
+                    com->cntrs.push_back(cntr);
+                    cntr->push_back(e);
+                    e->cntr = cntr;
+                    auto ret = contour_recursive(cntr, e, e);
+                    if(!ret) {
+                        myDebug() << "bad contour";
+                    }
+                }
+            }
+        }
+    }
+
+
+
+}
+
+Edge* idx(std::vector<Edge*> *cnt, int i) {
+    return (*cnt)[(i + cnt->size() - 1) % cnt->size()];
 }
 
 
@@ -327,17 +347,14 @@ bool Complex::automata()
     color_to_line();
     create_ccs();
 
-
-    for(auto cc : com->ccs) {
-
-
-        int cnt_sz = cc->cnt.size();
+    for(auto cntr : com->cntrs) {
+        int cnt_sz = cntr->size();
         for(int i = 0; i < cnt_sz; ++i) {
-            Edge* e = cc->cntr(i);
+            Edge* e = idx(cntr,i);
             Vec2 v1 = e->v();
-            Vec2 v2 = cc->cntr(i-1)->v() * -1;
+            Vec2 v2 = idx(cntr,i-1)->v() * -1;
 
-            auto pd = cc->cntr(i+1)->n->p() - cc->cntr(i-1)->n->p();
+            //auto pd = cc->cntr(i+1)->n->p() - cc->cntr(i-1)->n->p();
 
             if(e->t->type != Tri::Regular)
                 continue;
@@ -372,40 +389,40 @@ bool Complex::automata()
             auto dws = 0.0;
 
             for(int k = 0; k < ngh; ++k) {
-                if(cc->cntr(i+k)->j->t->cc == nullptr || cc->cntr(i-k-1)->j->t->cc == nullptr) continue;
-                double wj1 = cc->cntr(i+k)->j->t->cc->area;
-                double wj2 = cc->cntr(i-k-1)->j->t->cc->area;
-                double abc1 = fmax(0.0,fmin(we/wj1,1.0));//(1.0-exp(-jfw/ew*C));
-                double abc2 = fmax(0.0,fmin(we/wj2,1.0));//(1.0-exp(-jbw/ew*C));
+                if(idx(cntr,i+k)->j->t->cc == nullptr || idx(cntr,(i-k-1))->j->t->cc == nullptr) continue;
+                //double wj1 = cc->cntr(i+k)->j->t->cc->area;
+                //double wj2 = cc->cntr(i-k-1)->j->t->cc->area;
+                //double abc1 = fmax(0.0,fmin(we/wj1,1.0));//(1.0-exp(-jfw/ew*C));
+                //double abc2 = fmax(0.0,fmin(we/wj2,1.0));//(1.0-exp(-jbw/ew*C));
 
-                auto vn1 = cc->cntr(i+k)->v();
-                auto vn2 = cc->cntr(i-k-1)->v() * -1;
-                auto pn1 = cc->cntr(i+k+1)->n->p();
-                auto pn2 = cc->cntr(i-k-1)->n->p();
+                //auto vn1 = cc->cntr(i+k)->v();
+                //auto vn2 = cc->cntr(i-k-1)->v() * -1;
+                auto pn1 = idx(cntr,i+k+1)->n->p();
+                auto pn2 = idx(cntr,i-k-1)->n->p();
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
-                auto mn_pn1 = pn1 - cc->cntr(i+k)->j->t->cc->mid;
-                auto mn_pn2 = pn2 - cc->cntr(i-k-1)->j->t->cc->mid;
-                auto m_pn1 = pn1 - cc->mid;
-                auto m_pn2 = pn2 - cc->mid;
-                auto m_mn1 = cc->cntr(i+k)->j->t->cc->mid - cc->mid;
-                auto m_mn2 = cc->cntr(i-k-1)->j->t->cc->mid - cc->mid;
+                auto mn_pn1 = pn1 - idx(cntr,i+k)->j->t->cc->mid;
+                auto mn_pn2 = pn2 - idx(cntr,i-k-1)->j->t->cc->mid;
+                auto m_pn1 = pn1 - e->t->cc->mid;
+                auto m_pn2 = pn2 - e->t->cc->mid;
+                //auto m_mn1 = cc->cntr(i+k)->j->t->cc->mid - cc->mid;
+                //auto m_mn2 = cc->cntr(i-k-1)->j->t->cc->mid - cc->mid;
 
-                auto dd1 = (1.0 + (cc->cntr(i+k+0)->v().unit0() ^ cc->cntr(i+k+1)->v().unit0())) / 2.0;
-                auto dd2 = (1.0 + (cc->cntr(i-k-2)->v().unit0() ^ cc->cntr(i-k-1)->v().unit0())) / 2.0;
-                dws += dd1 + dd2;
+                //auto dd1 = (1.0 + (cc->cntr(i+k+0)->v().unit0() ^ cc->cntr(i+k+1)->v().unit0())) / 2.0;
+                //auto dd2 = (1.0 + (cc->cntr(i-k-2)->v().unit0() ^ cc->cntr(i-k-1)->v().unit0())) / 2.0;
+                //dws += dd1 + dd2;
 
-                auto pmn1 = cc->cntr(i+k)->j->t->cc->mid - e->n->p();
-                auto pmn2 = cc->cntr(i-k-1)->j->t->cc->mid - e->n->p();
-                auto mm1 = cc->mid - cc->cntr(i+k)->j->t->cc->mid;
-                auto mm2 = cc->mid - cc->cntr(i-k-1)->j->t->cc->mid;
-                auto bb1 = 1 + (vn1.unit0() ^ mm1.unit0());
-                auto bb2 = 1 + ((vn2.unit0()*-1) ^ mm2.unit0());
-                auto cc1 = 1 + (m_pn1.unit0() ^ vn1.unit0());
-                auto cc2 = 1 + (m_pn2.unit0() ^ (vn2*-1).unit0());
+                //auto pmn1 = cc->cntr(i+k)->j->t->cc->mid - e->n->p();
+                //auto pmn2 = cc->cntr(i-k-1)->j->t->cc->mid - e->n->p();
+                //auto mm1 = cc->mid - cc->cntr(i+k)->j->t->cc->mid;
+                //auto mm2 = cc->mid - cc->cntr(i-k-1)->j->t->cc->mid;
+                //auto bb1 = 1 + (vn1.unit0() ^ mm1.unit0());
+                //auto bb2 = 1 + ((vn2.unit0()*-1) ^ mm2.unit0());
+                //auto cc1 = 1 + (m_pn1.unit0() ^ vn1.unit0());
+                //auto cc2 = 1 + (m_pn2.unit0() ^ (vn2*-1).unit0());
 
-                auto ee1 = fmax(0, 1 + (pd.unit0() ^ p_pn1.unit0()));
-                auto ee2 = fmax(0, 1 + (pd.unit0() ^ p_pn2.unit0()));
+                //auto ee1 = fmax(0, 1 + (pd.unit0() ^ p_pn1.unit0()));
+                //auto ee2 = fmax(0, 1 + (pd.unit0() ^ p_pn2.unit0()));
 
                 auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * (mn_pn1.dot()) * (m_pn1.dot());
                 auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * (mn_pn2.dot()) * (m_pn2.dot());

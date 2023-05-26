@@ -2,6 +2,7 @@
 #include <list>
 #include "common/vector.h"
 #include "common/color.h"
+#include <vector>
 
 struct Tri;
 struct Node;
@@ -39,6 +40,7 @@ struct Edge {
     mutable double o2;
     mutable double cost;
 
+    std::vector<Edge*> *cntr;
 };
 
 
