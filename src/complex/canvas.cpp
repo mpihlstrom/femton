@@ -302,9 +302,6 @@ void create_ccs() {
             }
         }
     }
-
-
-
 }
 
 Edge* idx(std::vector<Edge*> *cnt, int i) {
@@ -324,9 +321,9 @@ bool Complex::automata()
         Contour &cntr = *cntr_p;
         int cnt_sz = cntr.count();
         for(int i = 0; i < cnt_sz; ++i) {
-            Edge* e = cntr(i);
+            Edge* e = cntr[i];
             Vec2 v1 = e->v();
-            Vec2 v2 = cntr(i-1)->v() * -1;
+            Vec2 v2 = cntr[i-1]->v() * -1;
 
             //auto pd = cc->cntr(i+1)->n->p() - cc->cntr(i-1)->n->p();
 
@@ -354,7 +351,7 @@ bool Complex::automata()
 
             //int ngh = fmin(cnt_sz/2-1,fmax(2, (1.0-exp(-ew/jw*C))*cnt_sz));
             //int ngh = fmin(ew/jw,1.0)*(cnt_sz/2-1);
-            int ngh = 4;//fmin(fmax(3, 1500.0/cnt_sz), cnt_sz*0.5-1);
+            int ngh = 3;//fmin(fmax(3, 1500.0/cnt_sz), cnt_sz*0.5-1);
             //int ngh = (cnt_sz/2-1)*(1.0-exp(-jw/ew*50));
             Vec2 vn;
             auto vnws = 0.0;
@@ -362,8 +359,58 @@ bool Complex::automata()
             auto pws = 0.0;
             auto dws = 0.0;
 
+            int ngh2 = 150;
+
+            Vec2 mid;
+            auto midws = 0.0;
+            for(int k = 0; k < fmin(cntr.sz(), ngh2); ++k) {//cntr.sz()/4+1; ++k) {
+                auto w = 1.0;// / ((cntr(i+k)->n->p() - e->n->p()).dot() + 1);
+                mid += cntr[i+k]->n->p() * w;
+                mid += cntr[i-k]->n->p() * w;
+                midws += w*2;
+            }
+            mid /= midws;
+
+
+
+            Vec2 midj1;
+            auto midj1ws = 0.0;
+            auto j1 = cntr[i]->j->cont(1);
+            if(j1->cntr == nullptr) {
+                j1->t->color = Col::random();
+                continue;
+            }
+            for(int k = 0; k < fmin(j1->cntr->sz(), ngh2); ++k) {//j1->contour->sz()/4+1; ++k) {
+                auto w = 1.0;
+                midj1 += j1->cont(k)->n->p() * w;
+                midj1ws += w;
+            }
+            midj1 /= midj1ws;
+
+
+            Vec2 midj2;
+            auto midj2ws = 0.0;
+            auto j2 = cntr[i-1]->j;
+            if(j2->cntr == nullptr) {
+                j2->t->color = Col::random();
+                continue;
+            }
+            for(int k = 0; k < fmin(j2->cntr->sz(), ngh2); ++k) {//j2->contour->sz()/4+1; ++k) {
+                auto w = 1.0;
+                midj2 += j2->cont(-k)->n->p() * w;
+                midj2ws += w;
+            }
+            midj2 /= midj2ws;
+
             for(int k = 0; k < ngh; ++k) {
-                if(cntr(i+k)->j->t->cc == nullptr || cntr(i-k-1)->j->t->cc == nullptr) continue;
+                if(cntr[i+k+0]->j->t->cc == nullptr) {
+                    cntr[i+k+0]->j->t->color = Col::random();
+                    continue;
+                }
+                if(cntr[i-k-1]->j->t->cc == nullptr) {
+                    cntr[i-k-1]->j->t->color = Col::random();
+                    continue;
+                }
                 //double wj1 = cc->cntr(i+k)->j->t->cc->area;
                 //double wj2 = cc->cntr(i-k-1)->j->t->cc->area;
                 //double abc1 = fmax(0.0,fmin(we/wj1,1.0));//(1.0-exp(-jfw/ew*C));
@@ -371,14 +418,14 @@ bool Complex::automata()
 
                 //auto vn1 = cc->cntr(i+k)->v();
                 //auto vn2 = cc->cntr(i-k-1)->v() * -1;
-                auto pn1 = cntr(i+k+1)->n->p();
-                auto pn2 = cntr(i-k-1)->n->p();
+                auto pn1 = cntr[i+k+1]->n->p();
+                auto pn2 = cntr[i-k-1]->n->p();
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
-                auto mn_pn1 = pn1 - cntr(i+k)->j->t->cc->mid;
-                auto mn_pn2 = pn2 - cntr(i-k-1)->j->t->cc->mid;
-                auto m_pn1 = pn1 - e->t->cc->mid;
-                auto m_pn2 = pn2 - e->t->cc->mid;
+                auto mn_pn1 = pn1 - midj1;//cntr[i-k-1]->j->t->cc->mid;//cntr[i+0]->j->t->cc->mid;//
+                auto mn_pn2 = pn2 - midj2;//cntr[i+k+0]->j->t->cc->mid;//cntr[i-1]->j->t->cc->mid;//
+                auto m_pn1 = pn1 - mid;//e->t->cc->mid;
+                auto m_pn2 = pn2 - mid;//e->t->cc->mid;
                 //auto m_mn1 = cc->cntr(i+k)->j->t->cc->mid - cc->mid;
                 //auto m_mn2 = cc->cntr(i-k-1)->j->t->cc->mid - cc->mid;
 
@@ -412,8 +459,10 @@ bool Complex::automata()
                 vnws += vnw1 + vnw2;
             }
 
-            if(pws <= 0)
+            if(pws <= 0) {
+                myDebug() << "(pws <= 0)";
                 continue;
+            }
             pn /= pws;
 
             /*
@@ -438,7 +487,7 @@ bool Complex::automata()
     delaunify();
     color_to_line();
     purge_nonlines();
-    purge_straight_lines();
+    //purge_straight_lines();
     color_to_line();
 
 

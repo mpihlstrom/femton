@@ -59,9 +59,6 @@ bool Edge::line() const {
     return w > 0;
 }
 
-
-
-
 bool Edge_iterator::operator!=(Edge_iterator const& i) const {
     return  e != i.e || first == i.first;
 }

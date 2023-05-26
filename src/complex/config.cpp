@@ -15,7 +15,7 @@ Complex::Move Complex::str_to_move(std::string str) {
 }
 
 Complex::Complex(bool configure) :
-    Units(1024),
+    Units(1024*4),
     color_dist_th(0.25/255.0),
     ev_quant(0.005 * Units),
     ar_quant(ev_quant*ev_quant * 1),
