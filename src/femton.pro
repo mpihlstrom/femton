@@ -23,7 +23,6 @@ HEADERS = \
     tool/tools.h \
     common/vector.h \
     common/vector3.h \
-    complex/iterator.h \
 
 SOURCES = \
     camera.cpp \
@@ -45,7 +44,6 @@ SOURCES = \
     complex/edge.cpp \
     complex/node.cpp \
     complex/config.cpp \
-    complex/iterator.cpp \
     window.cpp \
     globals.cpp \
     glew.c \

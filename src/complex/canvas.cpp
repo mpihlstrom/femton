@@ -19,13 +19,9 @@ void Complex::purge_nonlines()
 {
     for(auto n : ns) {
         for(auto e :*n)
-            if(e->line())
+            if(e->line() && e->j->t->type != Tri::Padding && e->t->type != Tri::Padding)
                 goto no_merge;
-        {
-            //myDebug() << "nonline merge";
-            if(n->type == Node::Border) merge(n->border());
-            else merge(n->entry());
-        }
+        merge((n->type == Node::Border)? n->border() : n->entry());
         no_merge:;
     }
     move_nodes();
@@ -142,24 +138,15 @@ void Complex::purge_spikes()
     move_nodes();
 }
 
-
-
-
-void Complex::refract(int iter)
+void Complex::refract(int iters)
 {
-    for(auto i = 0; i < iter; ++i) {
-        for(auto t : ts) {
-            if(t->type != Tri::Regular)
-                continue;
-            for(auto e : *t) {
-                if(e->line()) {
-                    if(e->v().l2() > ev_quant*10) {
+    for(auto i = 0; i < iters; ++i)
+        for(auto t : ts)
+            for(auto e : *t)
+                if(e->line())
+                    if(e->v().l2() > ev_quant*10)
                         split_edge(e, 0.5);
-                    }
-                }
-            }
-        }
-    }
+
 }
 
 
@@ -320,159 +307,100 @@ bool Complex::automata()
         int cnt_sz = cntr.count();
         for(int i = 0; i < cnt_sz; ++i) {
             Edge* e = cntr[i];
+            if(e->j->t->cc == nullptr)
+                continue;
+            auto j1 = cntr[i]->j->relcntr(1);
+            if(j1->cntr == nullptr)
+                continue;
+            auto j2 = cntr[i-1]->j;
+            if(j2->cntr == nullptr)
+                continue;
+
             Vec2 v1 = e->v();
             Vec2 v2 = cntr[i-1]->v() * -1;
+            Vec2 v0 = (v1 + v2)/2.0;
 
-            //auto pd = cc->cntr(i+1)->n->p() - cc->cntr(i-1)->n->p();
-
-            if(e->t->type != Tri::Regular)
-                continue;
-
-            double we = 1.0;
-            double wj = 1.0;
-            if(e->j->t->cc != nullptr) {
-                we = e->j->t->cc->area;
-                wj = (double)e->j->t->cc->area;
-            } else continue;
-
-            Vec2 v0;
-            auto w1 = 1.0;//pow(abs((v1.unit0()) ^ (v3.unit0())), 1);
-            auto w2 = 1.0;//pow(abs((v2.unit0()) ^ (v3.unit0())), 1);
-            v0 += v1 * w1;
-            v0 += v2 * w2;
-            auto w0s = w1+w2;
-            if(w0s <= 0)
-                continue;
-            v0 /= w0s;
-
-            double C = 8.0;
-
-            //int ngh = fmin(cnt_sz/2-1,fmax(2, (1.0-exp(-ew/jw*C))*cnt_sz));
-            //int ngh = fmin(ew/jw,1.0)*(cnt_sz/2-1);
-            int ngh = 3;//fmin(fmax(3, 1500.0/cnt_sz), cnt_sz*0.5-1);
-            //int ngh = (cnt_sz/2-1)*(1.0-exp(-jw/ew*50));
-            Vec2 vn;
-            auto vnws = 0.0;
-            Vec2 pn;
-            auto pws = 0.0;
-            auto dws = 0.0;
-
-            int ngh2 = 100;
+            int ngh = 4;
+            int ngh2 = 50;
 
             Vec2 mid;
             auto midws = 0.0;
             for(int k = 0; k < fmin(cntr.sz(), ngh2); ++k) {//cntr.sz()/4+1; ++k) {
-                auto w = 1.0;// / ((cntr(i+k)->n->p() - e->n->p()).dot() + 1);
-                mid += cntr[i+k]->n->p() * w;
-                mid += cntr[i-k]->n->p() * w;
-                midws += w*2;
+                mid += cntr[i+k]->n->p() + cntr[i-k]->n->p();
+                midws += 2;
             }
             mid /= midws;
 
             Vec2 midj1;
             auto midj1ws = 0.0;
-            auto j1 = cntr[i]->j->relcntr(1);
-            if(j1->cntr == nullptr) {
-                j1->t->color = Col::random();
-                continue;
-            }
             for(int k = 0; k < fmin(j1->cntr->sz(), ngh2); ++k) {//j1->contour->sz()/4+1; ++k) {
-                auto w = 1.0;
-                midj1 += j1->relcntr(k)->n->p() * w;
-                midj1ws += w;
+                midj1 += j1->relcntr(k)->n->p();
+                midj1ws += 1;
             }
             midj1 /= midj1ws;
 
 
             Vec2 midj2;
             auto midj2ws = 0.0;
-            auto j2 = cntr[i-1]->j;
-            if(j2->cntr == nullptr) {
-                j2->t->color = Col::random();
-                continue;
-            }
             for(int k = 0; k < fmin(j2->cntr->sz(), ngh2); ++k) {//j2->contour->sz()/4+1; ++k) {
-                auto w = 1.0;
-                midj2 += j2->relcntr(-k)->n->p() * w;
-                midj2ws += w;
+                midj2 += j2->relcntr(-k)->n->p();
+                midj2ws += 1;
             }
             midj2 /= midj2ws;
 
-            for(int k = 0; k < ngh; ++k) {
-                if(cntr[i+k+0]->j->t->cc == nullptr) {
-                    cntr[i+k+0]->j->t->color = Col::random();
-                    continue;
-                }
-                if(cntr[i-k-1]->j->t->cc == nullptr) {
-                    cntr[i-k-1]->j->t->color = Col::random();
-                    continue;
-                }
-                //double wj1 = cc->cntr(i+k)->j->t->cc->area;
-                //double wj2 = cc->cntr(i-k-1)->j->t->cc->area;
-                //double abc1 = fmax(0.0,fmin(we/wj1,1.0));//(1.0-exp(-jfw/ew*C));
-                //double abc2 = fmax(0.0,fmin(we/wj2,1.0));//(1.0-exp(-jbw/ew*C));
 
-                //auto vn1 = cc->cntr(i+k)->v();
-                //auto vn2 = cc->cntr(i-k-1)->v() * -1;
-                auto pn1 = cntr[i+k+1]->n->p();
-                auto pn2 = cntr[i-k-1]->n->p();
+            Vec2 pn;
+            auto pws = 0.0;
+            //Vec2 vn;
+            //auto vnws = 0.0;
+            for(int k = 0; k < ngh; ++k) {
+                //if(cntr[i+k+0]->j->t->cc == nullptr || cntr[i-k-1]->j->t->cc == nullptr)
+                //    continue;
+
+              /*double wj1 = cntr[i+k-0]->j->t->cc->area;
+                double wj2 = cntr[i-k-1]->j->t->cc->area;
+                double abc1 = fmax(0.0,fmin(we/wj1,1.0));//(1.0-exp(-jfw/ew*C));
+                double abc2 = fmax(0.0,fmin(we/wj2,1.0));//(1.0-exp(-jbw/ew*C));*/
+
+                auto pn1 = cntr[i+k]->n->p();
+                auto pn2 = cntr[i-k]->n->p();
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
-                auto mj_pn1 = pn1 - midj1;//cntr[i+0]->j->t->cc->mid;//cntr[i+k+0]->j->t->cc->mid;//
-                auto mj_pn2 = pn2 - midj2;//cntr[i-1]->j->t->cc->mid;//cntr[i-k-1]->j->t->cc->mid;//
-                auto m_pn1 = pn1 - mid;//e->t->cc->mid;//mid;//;
-                auto m_pn2 = pn2 - mid;//e->t->cc->mid;//mid;//;
-                //auto m_mn1 = cc->cntr(i+k)->j->t->cc->mid - cc->mid;
-                //auto m_mn2 = cc->cntr(i-k-1)->j->t->cc->mid - cc->mid;
+                auto mj_pn1 = pn1 - midj1;//;cntr[i-1]->j->t->cc->mid;//
+                auto mj_pn2 = pn2 - midj2;//;cntr[i+0]->j->t->cc->mid;//
+                auto m_pn1 = pn1 - mid;//e->t->cc->mid;//
+                auto m_pn2 = pn2 - mid;//e->t->cc->mid;//
 
-                //auto dd1 = (1.0 + (cc->cntr(i+k+0)->v().unit0() ^ cc->cntr(i+k+1)->v().unit0())) / 2.0;
-                //auto dd2 = (1.0 + (cc->cntr(i-k-2)->v().unit0() ^ cc->cntr(i-k-1)->v().unit0())) / 2.0;
-                //dws += dd1 + dd2;
-
-                //auto pmn1 = cc->cntr(i+k)->j->t->cc->mid - e->n->p();
-                //auto pmn2 = cc->cntr(i-k-1)->j->t->cc->mid - e->n->p();
-                //auto mm1 = cc->mid - cc->cntr(i+k)->j->t->cc->mid;
-                //auto mm2 = cc->mid - cc->cntr(i-k-1)->j->t->cc->mid;
-                //auto bb1 = 1 + (vn1.unit0() ^ mm1.unit0());
-                //auto bb2 = 1 + ((vn2.unit0()*-1) ^ mm2.unit0());
-                //auto cc1 = 1 + (m_pn1.unit0() ^ vn1.unit0());
-                //auto cc2 = 1 + (m_pn2.unit0() ^ (vn2*-1).unit0());
-
-                //auto ee1 = fmax(0, 1 + (pd.unit0() ^ p_pn1.unit0()));
-                //auto ee2 = fmax(0, 1 + (pd.unit0() ^ p_pn2.unit0()));
-
-                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * (mj_pn1.dot()) * (m_pn1.dot());
-                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * (mj_pn2.dot()) * (m_pn2.dot());
+                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * m_pn1.dot();// * mj_pn2.dot()
+                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * m_pn2.dot();// * mj_pn1.dot()
                 pn += pn1*pw1 + pn2*pw2;
                 pws += pw1+pw2;
 
-                //auto vnw1 = abs(mm1.unit0() ^ cc->cntr(i+k)->v().unit0())   / (ppn1.dot() + 1.0);
-                //auto vnw2 = abs(mm2.unit0() ^ cc->cntr(i-k-1)->v().unit0()) / (ppn2.dot() + 1.0);
+               /*auto vn1 = cc->cntr(i+k)->v();
+                auto vn2 = cc->cntr(i-k-1)->v() * -1;
+                auto vnw1 = abs(mm1.unit0() ^ cc->cntr(i+k)->v().unit0())   / (ppn1.dot() + 1.0);
+                auto vnw2 = abs(mm2.unit0() ^ cc->cntr(i-k-1)->v().unit0()) / (ppn2.dot() + 1.0);
                 auto vnw1 = pw1;
                 auto vnw2 = pw2;
                 vn += p_pn1 * vnw1;
                 vn += p_pn2 * vnw2;
-                vnws += vnw1 + vnw2;
+                vnws += vnw1 + vnw2;*/
             }
 
-            if(pws <= 0) {
-                myDebug() << "(pws <= 0)";
+            if(pws <= 0)
                 continue;
-            }
             pn /= pws;
 
-            /*
-            if(vnws <= 0)
+           /*if(vnws <= 0)
                continue;
-            vn /= vnws;
-            */
+            vn /= vnws;*/
 
             auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2.0;//vn.l2();//
             //auto abc = fabs(vn.unit0() & (e->t->cc->mid - e->j->t->cc->mid).unit0());
             //auto abc = fabs(v1.unit0() & v2.unit0());//fabs(vn.unit0() & v3.unit0());
             Vec2 v = v0 - v3;//*fmax(fmin(we/wj,1),0.5);//v0 = v0.unit0() * com->ev_quant * 0.5;
             //Vec2 v = v0 - vn;//fmax(fmin(pow(wj/we,2), 1.0),0.1);//(1.0-exp(-jw/ew*C));//
-            v *= 0.75;
+            v *= 0.66;
 
             move(*e->n, e->n->cp + v);
 
