@@ -292,6 +292,7 @@ void Window::keyPressEvent(QKeyEvent *e) {
         myDebug() << contrast_scale;
         break;
 
+        /*
     case Qt::Key_Plus:
         gaussian_size *= 1.05f;
         myDebug() << "gaussian_size";
@@ -302,7 +303,18 @@ void Window::keyPressEvent(QKeyEvent *e) {
         myDebug() << "gaussian_size";
         myDebug() << gaussian_size;
         break;
+*/
 
+    case Qt::Key_Plus:
+        line_width *= 1.05f;
+        myDebug() << "line_width";
+        myDebug() << line_width;
+        break;
+    case Qt::Key_Minus:
+        line_width /= 1.05f;
+        myDebug() << "line_width";
+        myDebug() << line_width;
+        break;
 
 /*
     case Qt::Key_Plus:

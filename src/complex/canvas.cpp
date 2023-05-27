@@ -339,7 +339,6 @@ bool Complex::automata()
             }
             midj1 /= midj1ws;
 
-
             Vec2 midj2;
             auto midj2ws = 0.0;
             for(int k = 0; k < fmin(j2->cntr->sz(), ngh2); ++k) {//j2->contour->sz()/4+1; ++k) {
@@ -348,31 +347,23 @@ bool Complex::automata()
             }
             midj2 /= midj2ws;
 
-
             Vec2 pn;
             auto pws = 0.0;
             //Vec2 vn;
             //auto vnws = 0.0;
             for(int k = 0; k < ngh; ++k) {
-                //if(cntr[i+k+0]->j->t->cc == nullptr || cntr[i-k-1]->j->t->cc == nullptr)
-                //    continue;
-
-              /*double wj1 = cntr[i+k-0]->j->t->cc->area;
-                double wj2 = cntr[i-k-1]->j->t->cc->area;
-                double abc1 = fmax(0.0,fmin(we/wj1,1.0));//(1.0-exp(-jfw/ew*C));
-                double abc2 = fmax(0.0,fmin(we/wj2,1.0));//(1.0-exp(-jbw/ew*C));*/
-
                 auto pn1 = cntr[i+k]->n->p();
                 auto pn2 = cntr[i-k]->n->p();
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
-                auto mj_pn1 = pn1 - midj1;//;cntr[i-1]->j->t->cc->mid;//
-                auto mj_pn2 = pn2 - midj2;//;cntr[i+0]->j->t->cc->mid;//
                 auto m_pn1 = pn1 - mid;//e->t->cc->mid;//
                 auto m_pn2 = pn2 - mid;//e->t->cc->mid;//
-
-                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * m_pn1.dot();// * mj_pn2.dot()
-                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * m_pn2.dot();// * mj_pn1.dot()
+                //if(cntr[i+k+0]->j->t->cc == nullptr || cntr[i-k-1]->j->t->cc == nullptr)
+                //    continue;
+                auto mj_pn1 = pn1 - cntr[i-1]->j->t->cc->mid;//midj1;//cntr[i+k+0]->j->t->cc->mid;//
+                auto mj_pn2 = pn2 - cntr[i+0]->j->t->cc->mid;//midj2;//cntr[i-k-1]->j->t->cc->mid;//
+                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * m_pn1.dot();// * mj_pn2.dot();
+                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * m_pn2.dot();// * mj_pn1.dot();
                 pn += pn1*pw1 + pn2*pw2;
                 pws += pw1+pw2;
 

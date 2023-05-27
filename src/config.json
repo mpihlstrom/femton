@@ -1,12 +1,12 @@
 {
 "line width" : 1,
-"point size" : 3,
+"point size" : 4,
 
-"surface" : true,
+"surface" : false,
 "gaussian" : true,
 "painting" : true,
 "nodes" : false,
-"edges" : false,
+"edges" : true,
 "control net" : false,
 
 

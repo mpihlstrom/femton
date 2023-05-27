@@ -140,23 +140,15 @@ float vsin(vec2 v1, vec2 v2) {
 void main() {
 
     vec2 viewport_coord = (v_position + vec2(1.0,1.0))  / 2.0;
-    vec4 bgcolora = vec4(bg_color, 1);
+    vec4 bgcolora = vec4(0,0,0,1);//vec4(bg_color, 1);
     f_color = bgcolora;
 
     vec2 p = vec2(viewport_coord - vec2(0.5, 0.5)) * 2.0;
     float r = gold_noise(p,render_counter+100), g = gold_noise(p,r), b = gold_noise(p,g);
-
-    /*vec2 rp1 = vec2(vec2(r,g) - vec2(0.5, 0.5)) * 2.0;
-    vec2 rp2 = vec2(vec2(b, gold_noise(p,b)) - vec2(0.5, 0.5)) * 2.0;
-    vec4 r_c = texture(surface_buffer, viewport_coord + rp1*rp2*0.1);
-    f_color = r_c;*/
-    //if(int(render_counter*g) % 2 != 0) r = g = b;
-    //r=round(r); g=round(g); b=round(b);
     float al = 0.1;
+    //f_color = vec4(r,g,b, 1)*al + vec4(vec3(0.5),1)*(1.0-al);
 
-
-    f_color = vec4(r,g,b, 1)*al + vec4(vec3(0.5),1)*(1.0-al);
-
+    f_color = vec4(0,0,0,1);
 
 
 
@@ -183,21 +175,21 @@ void main() {
         f_color = c*al + f_color*(1.0-al);
     }
 
+    vec4 before_edges = f_color;
+
     if(draw_edges == 1)
     {
         vec4 c = texture(edges_buffer, viewport_coord);
         f_id = texture(edges_id_buffer, viewport_coord).r;
-        f_color = inv(h120(f_color))*c.a + f_color*(1.0-c.a);
+        f_color = inv((bgcolora))*c.a + f_color*(1.0-c.a);
         //f_color = c*c.a + f_color*(1-c.a);
     }
 
-
-
     if(draw_nodes == 1) {
         vec4 col = texture(nodes_buffer, viewport_coord);
-        //col = vec4(1,1,1,col.a);
+        //f_color = h120((f_color))*col.a + f_color*(1.0-col.a);
+        f_color = inv((bgcolora))*col.a + f_color*(1.0-col.a);
 
-        f_color = h120((f_color))*col.a + f_color*(1.0-col.a);
         //float al = col.a;
         //f_color = col*al + f_color*(1.0-al);
         if(col.a != 0) {
