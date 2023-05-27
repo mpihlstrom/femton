@@ -2,11 +2,11 @@
 "line width" : 1,
 "point size" : 4,
 
-"surface" : false,
+"surface" : true,
 "gaussian" : true,
-"painting" : true,
+"painting" : false,
 "nodes" : false,
-"edges" : true,
+"edges" : false,
 "control net" : false,
 
 

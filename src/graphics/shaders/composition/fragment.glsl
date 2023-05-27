@@ -140,6 +140,13 @@ float vsin(vec2 v1, vec2 v2) {
 void main() {
 
     vec2 viewport_coord = (v_position + vec2(1.0,1.0))  / 2.0;
+
+    bool halfplane_h = viewport_coord.x > 0.5;
+    float h = 1.0-viewport_coord.y;
+    float v = 1.0-viewport_coord.x;
+    float h_a = 1.0 / (1.0 + exp(-20*(h - 0.5)));
+    float v_a = 1.0 / (1.0 + exp(-20*(v - 0.5)));
+
     vec4 bgcolora = vec4(0,0,0,1);//vec4(bg_color, 1);
     f_color = bgcolora;
 
@@ -158,9 +165,12 @@ void main() {
         if(f_id != 0) {
             vec4 col;
             if(draw_gaussian_v ==  0)  col = texture(surface_buffer, viewport_coord);
-            else if(draw_painting == 1) col = texture(painting_buffer, viewport_coord);
+            //else if(draw_painting == 1) col = texture(painting_buffer, viewport_coord);
             else col = texture(gaussian_v_buffer, viewport_coord);
-            f_color = col*col.a + f_color*(1.0-col.a);
+            if(draw_painting == 1)
+                f_color = col*h_a + f_color*(1.0-h_a);
+            else
+                f_color = col;
         }
         //f_color = texture(gaussian_v_buffer, viewport_coord); f_color.a = 1;
     }
@@ -168,7 +178,7 @@ void main() {
     if(draw_control_net == 1)
     {
         vec4 c0 = texture(control_net_buffer, viewport_coord);
-        vec4 c = semi(f_color);
+        vec4 c = vec4(.5,.5,.5,1);//inv(f_color);
         c.a = c0.a;
         float al = c.a;
         //f_color = semi(f_color)*al +  f_color*(1.0-al);//semi(f_color)*c.a + f_color*(1.0-c.a);
@@ -181,8 +191,10 @@ void main() {
     {
         vec4 c = texture(edges_buffer, viewport_coord);
         f_id = texture(edges_id_buffer, viewport_coord).r;
-        f_color = inv((bgcolora))*c.a + f_color*(1.0-c.a);
-        //f_color = c*c.a + f_color*(1-c.a);
+        vec4 col = inv(bgcolora);
+        if(draw_painting == 1)
+            col = col*(1.0-h_a) + f_color*h_a;
+        f_color = col*c.a + f_color*(1.0-c.a);
     }
 
     if(draw_nodes == 1) {

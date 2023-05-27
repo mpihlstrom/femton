@@ -321,7 +321,7 @@ bool Complex::automata()
             Vec2 v0 = (v1 + v2)/2.0;
 
             int ngh = 4;
-            int ngh2 = 50;
+            int ngh2 = 25;
 
             Vec2 mid;
             auto midws = 0.0;
@@ -360,10 +360,10 @@ bool Complex::automata()
                 auto m_pn2 = pn2 - mid;//e->t->cc->mid;//
                 //if(cntr[i+k+0]->j->t->cc == nullptr || cntr[i-k-1]->j->t->cc == nullptr)
                 //    continue;
-                auto mj_pn1 = pn1 - cntr[i-1]->j->t->cc->mid;//midj1;//cntr[i+k+0]->j->t->cc->mid;//
-                auto mj_pn2 = pn2 - cntr[i+0]->j->t->cc->mid;//midj2;//cntr[i-k-1]->j->t->cc->mid;//
-                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * m_pn1.dot();// * mj_pn2.dot();
-                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * m_pn2.dot();// * mj_pn1.dot();
+                auto mj_pn1 = pn1 - cntr[i-1]->j->t->cc->mid;//midj1;//
+                auto mj_pn2 = pn2 - cntr[i+0]->j->t->cc->mid;//midj2;//
+                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * m_pn1.dot() * mj_pn1.dot();
+                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * m_pn2.dot() * mj_pn2.dot();
                 pn += pn1*pw1 + pn2*pw2;
                 pws += pw1+pw2;
 
@@ -386,7 +386,7 @@ bool Complex::automata()
                continue;
             vn /= vnws;*/
 
-            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2.0;//vn.l2();//
+            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2;//vn.l2();//
             //auto abc = fabs(vn.unit0() & (e->t->cc->mid - e->j->t->cc->mid).unit0());
             //auto abc = fabs(v1.unit0() & v2.unit0());//fabs(vn.unit0() & v3.unit0());
             Vec2 v = v0 - v3;//*fmax(fmin(we/wj,1),0.5);//v0 = v0.unit0() * com->ev_quant * 0.5;
