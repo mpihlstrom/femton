@@ -12,6 +12,7 @@ template<typename S> struct Vector3 {
 	Vector3(const Vector3<int64_t>& b) : x((S)b.x), y((S)b.y), z((S)b.z) {}
 	Vector3(const Vector3<double>& b)  : x((S)b.x), y((S)b.y), z((S)b.z) {}
 	Vector3(const Vector3<int32_t>& b) : x((S)b.x), y((S)b.y), z((S)b.z) {}
+    Vector3& operator=(Vector3 const& b) { x = b.x; y = b.y; z = b.z; return *this; }
 
 	Vector3 operator*(Vector3 const& b) const { return Vector3(x*b.x, y*b.y, z*b.z); }
 	Vector3 operator/(Vector3 const& b) const { return Vector3(x/b.x, y/b.y, z/b.z); }

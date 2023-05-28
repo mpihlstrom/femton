@@ -1,5 +1,6 @@
 HEADERS = \
     camera.h \
+    complex/contour.h \
     graphics/shader.h \
     init.h \
     state.h \
@@ -28,6 +29,7 @@ SOURCES = \
     camera.cpp \
     common/common.cpp \
     complex/canvas.cpp \
+    complex/contour.cpp \
     complex/equations.cpp \
     complex/flip.cpp \
     complex/moveconcur.cpp \

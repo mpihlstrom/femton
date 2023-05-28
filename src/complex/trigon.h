@@ -11,35 +11,9 @@
 
 struct Node;
 struct Tri;
+struct Concomp;
 
 typedef std::list<Tri*> Trigons;
-typedef std::vector<Tri*> TrigonsV;
-typedef Trigons::iterator titerator;
-
-struct Concomp {
-    TrigonsV ts;
-    int64_t area;
-    Vec2 mid;
-    double cos;
-    std::set<Concomp*> neighbors;
-    Vec3 covar;
-    Vec2 eigv;
-    Vec2 eigvec1;
-    Vec2 eigvec2;
-    double r;
-};
-
-struct Contour {
-    void add(Edge* e) {
-        cntr.push_back(e);
-        e->cntr = this;
-        e->cntr_index = cntr.size() - 1;
-    }
-    Edge* operator[](int i) { return cntr[(i + cntr.size() - 1) % cntr.size()]; }
-    int sz() { return count(); }
-    int count() { return cntr.size(); }
-    std::vector<Edge*> cntr;
-};
 
 struct Tri : Class, Eumetry {
     struct Cross {

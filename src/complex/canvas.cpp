@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "complex/complex.h"
+#include "contour.h"
 
 void Complex::color_to_line() {
     for(auto t : ts) {
@@ -178,116 +179,7 @@ void purge_nonlines_recursive() {
     }
 }
 
-//pre-condition: e->j is in cc
-void recursive_fill(Concomp* cc, Edge* e) {
-    if(e->t->cc != nullptr)  { return; }
-    if(e->line()) return;
-    if(e->t->type != Tri::Regular) return;
-    cc->ts.push_back(e->t);
-    e->t->cc = cc;
-    recursive_fill(cc, e->nxt->j);
-    recursive_fill(cc, e->prv->j);
-}
 
-void populate_neighbors(Tri* t) {
-    for(auto e : *t) {
-        auto neighbor_cc = e->j->t->cc;
-        if(neighbor_cc == nullptr)
-            continue;
-        //if(t->cc->neighbors.find(neighbor_cc) == t->cc->neighbors.end()) {
-        t->cc->neighbors.insert(neighbor_cc);
-        //}
-    }
-}
-
-bool contour_recursive(Contour *cntr, Edge* cur, Edge* start) {
-    Node* n = cur->nxt->n;
-    Edge* nxt = nullptr;
-    for(auto ei = n->begin(); ei != n->end(); ++ei) {
-        Edge* e = *ei;
-        if(nxt == nullptr) {
-            if(e->t->cc == start->t->cc && e->j->t->cc != start->t->cc) {
-                if(e == start)
-                    return true;
-                nxt = e;
-            }
-        }
-        else if(e->t->cc != start->t->cc) {
-            if(e->j == cur)
-                break;
-            nxt = nullptr;
-        }
-    }
-    if(nxt == nullptr) //should not happen
-        return false;
-    cntr->add(nxt);
-    return contour_recursive(cntr, nxt, start);
-}
-
-
-void create_ccs() {
-    for(auto c : com->cntrs)
-        delete c;
-    com->cntrs.clear();
-    for(auto cc : com->ccs)
-        delete cc;
-    com->ccs.clear();
-    for(auto t : com->trigons) {
-        for(auto e : *t)
-            e->cntr = nullptr;
-        t->cc = nullptr;
-    }
-    for(auto t : com->ts) {
-        if(t->cc != nullptr)
-            continue;
-        auto cc = new Concomp();
-        cc->ts.push_back(t);
-        t->cc = cc;
-        for(auto e : *t)
-            recursive_fill(cc, e->j);
-        com->ccs.push_back(cc);
-    }
-    for(auto cc : com->ccs) {
-        for(auto t : cc->ts) {
-            cc->area += t->area();
-            cc->mid += t->centroid();
-        }
-        cc->mid /= cc->ts.size();
-
-        Vec3 covar;
-        for(auto t : cc->ts) {
-            for(auto e : *t) {
-                auto d = cc->mid - e->n->p();
-                covar += Vec3(d.x*d.x, d.y*d.y, d.x*d.y);
-            }
-
-            populate_neighbors(t);
-        }
-        covar /= (3 * cc->ts.size());
-        cc->covar = covar;
-        double T = covar.x + covar.y;
-        double D = covar.x*covar.y - covar.z*covar.z;
-        double sq = sqrt(fabs(T*T/4.0 - D));
-
-        cc->r = covar.z / (sqrt(covar.x)*sqrt(covar.y));
-        cc->eigv = Vec2(T/2 + sq, T/2 - sq);
-        cc->eigvec1 = Vec2(covar.z, cc->eigv.x - covar.x).unit();
-    }
-
-    for(auto t : com->ts) {
-        for(auto e : *t) {
-            if(e->cntr == nullptr && e->t->cc != e->j->t->cc) {
-                auto cntr = new Contour;
-                com->cntrs.push_back(cntr);
-                cntr->add(e);
-                auto ret = contour_recursive(cntr, e, e);
-                if(!ret) {
-                    myDebug() << "bad contour";
-                }
-            }
-        }
-    }
-}
 
 Edge* idx(std::vector<Edge*> *cnt, int i) {
     return (*cnt)[(i + cnt->size() - 1) % cnt->size()];
@@ -300,7 +192,7 @@ bool Complex::automata()
     color_to_line();
     refract();
     color_to_line();
-    create_ccs();
+    create_contours();
 
     for(auto cntr_p : com->cntrs) {
         Contour &cntr = *cntr_p;

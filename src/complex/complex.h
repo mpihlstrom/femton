@@ -89,6 +89,8 @@ struct Complex {
     void refract(int iter = 1);
     bool automata();
 
+    void create_contours();
+
     void waste();
     Tri* inside(Vec2i const& p) const;
     Vec2 canvas() const { return _canvas; }
