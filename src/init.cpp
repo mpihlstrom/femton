@@ -63,7 +63,7 @@ void post_init() {
     com->move_mode = com->str_to_move(root.get("move_mode", "conseq").asString());
 
     //view->pos = Vec2(-100, -100);
-    //view->zrotzoom = Vec2(0.99,0);
+    //view->zrotzoom = Vec2(0.98,0);
 
     brush_color = Col::White;
     window->set_colorpicker_button_color();

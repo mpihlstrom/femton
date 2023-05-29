@@ -289,6 +289,7 @@ void Window::new_canvas()
     ts[0]->color = ts[3]->color = Col(0.01,0.01,0.01);
     ts[2]->color = ts[1]->color = Col(0.99,0.99,0.99);
     com->cola = ts[0]->color;
+    com->colb = ts[1]->color;
     //ts[0]->color = Col(0.99,0.99,0.99);
     //ts[1]->color = Col(0.01,0.01,0.01);
     com->color_to_line();

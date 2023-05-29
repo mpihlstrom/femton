@@ -144,18 +144,16 @@ void main() {
     bool halfplane_h = viewport_coord.x > 0.5;
     float h = 1.0-viewport_coord.y;
     float v = 1.0-viewport_coord.x;
-    float h_a = 1.0 / (1.0 + exp(-20*(h - 0.5)));
-    float v_a = 1.0 / (1.0 + exp(-20*(v - 0.5)));
+    float h_a = 1.0 / (1.0 + exp(-40*(h - 0.5)));
+    float v_a = 1.0 / (1.0 + exp(-40*(v - 0.5)));
 
-    vec4 bgcolora = vec4(0,0,0,1);//vec4(bg_color, 1);
+    vec4 bgcolora = vec4(vec3(1),1);//vec4(bg_color, 1);
     f_color = bgcolora;
 
     vec2 p = vec2(viewport_coord - vec2(0.5, 0.5)) * 2.0;
     float r = gold_noise(p,render_counter+100), g = gold_noise(p,r), b = gold_noise(p,g);
     float al = 0.1;
     //f_color = vec4(r,g,b, 1)*al + vec4(vec3(0.5),1)*(1.0-al);
-
-    f_color = vec4(0,0,0,1);
 
 
 
@@ -178,7 +176,8 @@ void main() {
     if(draw_control_net == 1)
     {
         vec4 c0 = texture(control_net_buffer, viewport_coord);
-        vec4 c = vec4(.5,.5,.5,1);//inv(f_color);
+        float q = 0.8;
+        vec4 c = f_color*q + inv(f_color)*(1.0-q);//inv(f_color);
         c.a = c0.a;
         float al = c.a;
         //f_color = semi(f_color)*al +  f_color*(1.0-al);//semi(f_color)*c.a + f_color*(1.0-c.a);
@@ -191,7 +190,7 @@ void main() {
     {
         vec4 c = texture(edges_buffer, viewport_coord);
         f_id = texture(edges_id_buffer, viewport_coord).r;
-        vec4 col = inv(bgcolora);
+        vec4 col = vec4(vec3(0),1);//semi(f_color);//
         if(draw_painting == 1)
             col = col*(1.0-h_a) + f_color*h_a;
         f_color = col*c.a + f_color*(1.0-c.a);
@@ -200,7 +199,7 @@ void main() {
     if(draw_nodes == 1) {
         vec4 col = texture(nodes_buffer, viewport_coord);
         //f_color = h120((f_color))*col.a + f_color*(1.0-col.a);
-        f_color = inv((bgcolora))*col.a + f_color*(1.0-col.a);
+        f_color = vec4(vec3(0),1)*col.a + f_color*(1.0-col.a);
 
         //float al = col.a;
         //f_color = col*al + f_color*(1.0-al);

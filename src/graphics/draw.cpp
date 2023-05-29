@@ -65,10 +65,14 @@ Col node_color(Node* n) {
 void Surface_render::set_buffer() {
     std::vector<G::Tri_patch> patches;
 
+    auto rand_col_a = Col::random();
+    auto rand_col_b = Col::random();
+
     //for(auto t0 : com->ts) { Tri const& t = *t0;
     for(auto t0 = com->trigons.cbegin(); t0 != com->trigons.cend(); ++t0) { Tri const& t = **t0;
 
         double curt = interpolate_move? com->curt : manual_curt;
+
         auto tc = t.color;
 
         /*auto na = t.a.n->type == Node::Floating? Col::White : t.a.n->type == Node::Border? Col::Black : Col::Red; //t.a.n->entry()->t->color;
