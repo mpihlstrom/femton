@@ -212,7 +212,7 @@ bool Complex::automata()
             Vec2 v2 = cntr[i-1]->v() * -1;
             Vec2 v0 = (v1 + v2)/2.0;
 
-            int ngh = 5;
+            int ngh = 4;
             int ngh2 = 40;
 
             Vec2 mid;
@@ -246,10 +246,17 @@ bool Complex::automata()
             for(int k = 0; k < ngh; ++k) {
                 auto pn1 = cntr[i+k]->n->p();
                 auto pn2 = cntr[i-k]->n->p();
+                auto vn1a = cntr[i+k]->v();
+                auto vn1b = cntr[i+k-1]->v();
+                auto vn2a = cntr[i-k]->v();
+                auto vn2b = cntr[i-k-1]->v();
+
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
-                auto m_pn1 = pn1 - mid;//e->t->cc->mid;//
-                auto m_pn2 = pn2 - mid;//e->t->cc->mid;//
+                auto m_pn1_a = pn1 - mid;//e->t->cc->mid;//
+                auto m_pn2_a = pn2 - mid;//e->t->cc->mid;//
+                auto m_pn1_b = pn1 - e->t->cc->mid;
+                auto m_pn2_b = pn2 - e->t->cc->mid;
                 if(cntr[i+k+0]->j->t->cc == nullptr || cntr[i-k-1]->j->t->cc == nullptr) continue;
                 auto jm_pn1_a = pn1 - cntr[i+0]->j->t->cc->mid;
                 auto jm_pn2_a = pn2 - cntr[i-1]->j->t->cc->mid;
@@ -257,8 +264,10 @@ bool Complex::automata()
                 auto jm_pn2_b = pn2 - cntr[i-k-1]->j->t->cc->mid;
                 auto jm_pn1_c = pn1 - midj1;
                 auto jm_pn2_c = pn2 - midj2;
-                auto pw1 = (1.0 / (p_pn1.dot()+1.0)) * m_pn1.dot();
-                auto pw2 = (1.0 / (p_pn2.dot()+1.0)) * m_pn2.dot();
+                auto abc1 = 1.0 + (vn1a.unit0() ^ vn1b.unit0());
+                auto abc2 = 1.0 + (vn2a.unit0() ^ vn2b.unit0());
+                auto pw1 = 1.0 / (p_pn1.dot()+1) * (m_pn1_a.dot()) * jm_pn1_b.dot();// / (jm_pn2_a.dot()+1)) ;
+                auto pw2 = 1.0 / (p_pn2.dot()+1) * (m_pn2_a.dot()) * jm_pn2_b.dot();// / (jm_pn1_a.dot()+1)) ;
                 pn += pn1*pw1 + pn2*pw2;
                 pws += pw1+pw2;
 
@@ -281,12 +290,13 @@ bool Complex::automata()
                continue;
             vn /= vnws;*/
 
-            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2;//vn.l2();//
+            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 1.95;//vn.l2();//
             //auto abc = fabs(vn.unit0() & (e->t->cc->mid - e->j->t->cc->mid).unit0());
             //auto abc = fabs(v1.unit0() & v2.unit0());//fabs(vn.unit0() & v3.unit0());
+            //v0 = v0.unit0() * com->ev_quant * 0.5;
             Vec2 v = v0 - v3;//*fmax(fmin(we/wj,1),0.5);//v0 = v0.unit0() * com->ev_quant * 0.5;
             //Vec2 v = v0 - vn;//fmax(fmin(pow(wj/we,2), 1.0),0.1);//(1.0-exp(-jw/ew*C));//
-            v *= 0.75;
+            v *= 0.56;
 
             move(*e->n, e->n->cp + v);
 
@@ -297,7 +307,7 @@ bool Complex::automata()
     delaunify();
     color_to_line();
     purge_nonlines();
-    purge_straight_lines();
+    //purge_straight_lines();
     color_to_line();
 
 
