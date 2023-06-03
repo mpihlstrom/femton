@@ -128,6 +128,13 @@ void Complex::create_contours() {
                 cntrs.push_back(cntr);
                 cntr->add(e);
                 auto ret = contour_recursive(cntr, e, e);
+                e->t->cc->contours += 1;
+                double sur = 0;
+                for(auto c : cntr->cntr) {
+                    sur += c->v().l2();
+                }
+                cntr->sur = sur;
+                e->t->cc->sur += sur;
             }
         }
     }

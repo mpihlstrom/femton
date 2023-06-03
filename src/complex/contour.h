@@ -8,6 +8,16 @@
 struct Tri;
 struct Edge;
 
+struct Contour {
+    void add(Edge* e);
+    Edge* operator[](int i);
+    int sz();
+    int count();
+    std::vector<Edge*> cntr;
+    double sur = 0.0;
+};
+
+
 struct Concomp {
     void add(Tri*);
     std::vector<Tri*> ts;
@@ -20,12 +30,7 @@ struct Concomp {
     Vec2 eigvec1;
     Vec2 eigvec2;
     double r;
+    int contours = 0;
+    double sur = 0.0;
 };
 
-struct Contour {
-    void add(Edge* e);
-    Edge* operator[](int i);
-    int sz();
-    int count();
-    std::vector<Edge*> cntr;
-};

@@ -4,16 +4,16 @@
 
 "surface" : true,
 "gaussian" : true,
-"painting" : false,
+"painting" : true,
 "nodes" : false,
 "edges" : false,
 "control net" : false,
 
 
 "contrast" : 1.0,
-"gaussian_size" : 30,
+"gaussian_size" : 10,
 "min_gaussian_q" : 0.0,
-"contrast_scale" : 12,
+"contrast_scale" : 25,
 
 
 "camera_zoom" : 1,
