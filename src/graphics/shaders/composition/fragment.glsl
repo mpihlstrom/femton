@@ -155,7 +155,7 @@ void main() {
     float al = 0.1;
 
 
-    f_color = vec4(r,g,b, 1)*al + vec4(vec3(0.5),1)*(1.0-al);
+    f_color = vec4(vec3(0),1);//vec4(r,g,b, 1)*al + vec4(vec3(0.5),1)*(1.0-al);
 
 
 

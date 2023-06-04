@@ -285,7 +285,7 @@ void Edges_render::draw() {
 
 void Nodes_render::draw() {
     model_view_projection(program);
-    program->setUniformValue(program->uniformLocation("point_size"), point_size * ((float)::draw->render_sz.w / (float)init_scr_sz.w));
+    program->setUniformValue(program->uniformLocation("point_size"), line_width * point_size * ((float)::draw->render_sz.w / (float)init_scr_sz.w));
 
     const GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
     glDrawBuffers(2, buffers);

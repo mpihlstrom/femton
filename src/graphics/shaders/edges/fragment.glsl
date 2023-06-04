@@ -59,7 +59,7 @@ void main(void) {
     float sinca = psin(vec2(v_v2), vec2(v_v0));
 
     float WH = float(W+H)/2;
-    float lw = 2.0 * line_width / zoom * (1.0/((screen_scale_x+screen_scale_y)/2.0)) * 1/WH;
+    float lw = 1.0 * line_width / zoom * (1.0/((screen_scale_x+screen_scale_y)/2.0)) * 1/WH;
     //float lw = 4.0 / zoom * (1.0/((screen_scale_x+screen_scale_y)/2.0)) * 1/WH;
 
     vec3 sins = vec3(sinab, sinbc, sinca);
