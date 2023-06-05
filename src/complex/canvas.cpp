@@ -186,8 +186,12 @@ Edge* idx(std::vector<Edge*> *cnt, int i) {
 }
 
 
+int automata_counter = 0;
+
 bool Complex::automata()
 {
+    ++automata_counter;
+
     purge_nonlines_recursive();
     color_to_line();
     refract();
@@ -197,8 +201,10 @@ bool Complex::automata()
     for(auto cntr_p : com->cntrs) {
         Contour &cntr = *cntr_p;
         int cnt_sz = cntr.count();
+
         for(int i = 0; i < cnt_sz; ++i) {
             Edge* e = cntr[i];
+            Edge* j = e->j;
             if(e->j->t->cc == nullptr)
                 continue;
             auto j1 = cntr[i]->j->relcntr(1);
@@ -214,14 +220,14 @@ bool Complex::automata()
 
             int ngh = 4;
             //int ngh2 = fmax(cntr.sz()*0.35, ngh*4);
-            int ngh2 = ngh*4;
+            int ngh2 = 28;
             //myDebug() << ngh2;
 
             Vec2 mid;
             auto midws = 0.0;
             double l1ws = 0.0;
             double l2ws = 0.0;
-            for(int k = 0; k < fmin(j1->cntr->sz(), ngh2); ++k) {//cntr.sz()/4+1; ++k) {
+            for(int k = 0; k < fmin(cnt_sz, ngh2); ++k) {//cntr.sz()/4+1; ++k) {
                 auto pn1 = cntr[i+k]->n->p();
                 auto pn2 = cntr[i-k]->n->p();
                 auto vn1a = cntr[i+k-1]->v();
@@ -287,8 +293,11 @@ bool Complex::automata()
                 auto vn2a = cntr[i-k-1]->v();
                 auto vn2b = cntr[i-k-0]->v();
 
-                auto pw1 = 1.0 / (p_pn1.dot()+1) * (m_pn1_a.dot()) / vnl2s1;
-                auto pw2 = 1.0 / (p_pn2.dot()+1) * (m_pn2_a.dot()) / vnl2s2;
+                auto cc1 = 1.0 + (m_pn1_b.unit0() & jm_pn1_a.unit0())*-1;
+                auto cc2 = 1.0 + (m_pn2_b.unit0() & jm_pn2_a.unit0())*-1;
+
+                auto pw1 = (1.0/(p_pn1.dot()+1)) * (m_pn1_a.dot()/vnl2s1) * cc1; // / jm_pn1_a.dot()
+                auto pw2 = (1.0/(p_pn2.dot()+1)) * (m_pn2_a.dot()/vnl2s2) * cc2; // / jm_pn2_a.dot()
                 pn += pn1*pw1 + pn2*pw2;
                 pws += pw1+pw2;
 
@@ -303,33 +312,105 @@ bool Complex::automata()
                 vnws += vnw1 + vnw2;*/
             }
 
-            if(pws <= 0)
+            if(pws <= 0) {
+                myDebug() << "pws <= 0";
                 continue;
+            }
             pn /= pws;
 
-           /*if(vnws <= 0)
-               continue;
-            vn /= vnws;*/
 
-            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 1.95;//vn.l2();//
-            //auto abc = fabs(vn.unit0() & (e->t->cc->mid - e->j->t->cc->mid).unit0());
-            //auto abc = fabs(v1.unit0() & v2.unit0());//fabs(vn.unit0() & v3.unit0());
-            auto w = sqrt((1 + ((cntr[i-1]->v().unit0() & cntr[i+0]->v().unit0()))));
-            //v0 = v0.unit0() * com->ev_quant * 0.5;
+            auto p_emid = e->t->cc->mid - e->n->p();
+            auto p_jmid = j->t->cc->mid - e->n->p();
+            //auto w = fmin(e->t->cc->area / e->t->cc->sur * p_mid.l2() * 0.1, 1);
+            const double C = 200;
+            auto we = fmin(e->t->cc->area / (com->ar_quant*C), 1);
+            auto wj = fmin(j->t->cc->area / (com->ar_quant*C), 1);
+            auto w = fmin(we, wj);
+            Vec2 p_mid = (we < wj)? p_emid : p_jmid;
+
+            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2.5;//vn.l2();//
+
             Vec2 v = v0 - v3;//*fmax(fmin(we/wj,1),0.5);//v0 = v0.unit0() * com->ev_quant * 0.5;
-            //Vec2 v = v0 - vn;//fmax(fmin(pow(wj/we,2), 1.0),0.1);//(1.0-exp(-jw/ew*C));//
             v *= 0.56;
+
+            //v = p_mid*0.16*(1.0-w) + v;
 
             move(*e->n, e->n->cp + v);
 
         }
     }
+
+    /*
+    for(auto cntr_p : com->cntrs) {
+        Contour &cntr = *cntr_p;
+
+        if(cntr[0]->j->t->cc == nullptr) continue;
+        if(cntr[0]->t->cc->area > cntr[0]->j->t->cc->area) continue;
+
+        auto vl2s = 0.0;
+        Vec2 vs;
+        for(int i = 0; i < cntr.count(); ++i) {
+            auto v = (cntr[i]->n->np - cntr[i]->n->cp);
+            vs += v;
+            vl2s += v.l2();
+        }
+        vs /= cntr.count();
+        vl2s /= cntr.count();
+        //auto ww = fmin(1.0, vs.l2() / (com->ev_quant));
+        //auto ww = fmin(1.0, vs.l2() / (com->ev_quant));
+        if(vl2s > 0.0) {
+            continue;
+        }
+        myDebug() << "non-moving! " << automata_counter << cntr[0];
+        //cntr[0]->t->color = Col::random();
+
+        auto q = fmin(1, fmax(0, 1.0 - (cntr.sur*cntr.sur / (4*M_PI)) / cntr[0]->t->cc->area));
+
+        Vec2 vv;
+        auto vvws = 0.0;
+        for(int i = 0; i < cntr.count(); ++i) {
+            auto e = cntr[i];
+            vv += e->j->t->cc->mid - cntr[i]->n->p();
+            vvws += vv.dot();
+        }
+        //if(vvws <= 0) continue;
+        //vv /= cntr.count();
+        vvws /= cntr.count();
+
+        for(int i = 0; i < cntr.count(); ++i) {
+            auto e = cntr[i];
+            auto v = e->j->t->cc->mid - cntr[i]->n->p();
+            auto mm = e->j->t->cc->mid - e->t->cc->mid;
+            auto ww = fabs(v.unit0() & mm.unit0());
+            if(v.dot() < mm.dot()) {
+                move(*e->n, e->n->cp + v.unit0()*ww*-1*com->ev_quant*2); //(e->v().rot90().unit0())*com->ev_quant*0.5 +
+            }
+        }
+    }*/
+
+
     move_nodes();
     color_to_line();
+
+    for(auto cntr_p : com->cntrs) {
+        Contour &cntr = *cntr_p;
+        for(int i = 0; i < cntr.count(); ++i) {
+            Edge* e = cntr[i];
+            if(e->t->cc->area < com->ar_quant*15 && e->v().l2() < com->ev_quant*15) {
+                merge(e);
+                break;
+            }
+        }
+    }
+    move_nodes();
+
+    color_to_line();
+
     delaunify();
     color_to_line();
-    purge_nonlines();
+
     //purge_straight_lines();
+    //purge_small_trigons();
     color_to_line();
 
 

@@ -173,23 +173,22 @@ void main() {
         //f_color = texture(gaussian_v_buffer, viewport_coord); f_color.a = 1;
     }
 
+    if(draw_control_net == 1)
+    {
+        vec4 c0 = texture(control_net_buffer, viewport_coord);
+        vec4 c = vec4(vec3(0.3),1);//semi(f_color);
+        c.a = c0.a;
+        float al = c.a;
+        //f_color = semi(f_color)*al +  f_color*(1.0-al);//semi(f_color)*c.a + f_color*(1.0-c.a);
+        f_color = c*al + f_color*(1.0-al);
+    }
 
     if(draw_edges == 1)
     {
         vec4 c = texture(edges_buffer, viewport_coord);
         f_id = texture(edges_id_buffer, viewport_coord).r;
-        f_color = inv(h120(f_color))*c.a + f_color*(1.0-c.a);
+        f_color = vec4(1)*c.a + f_color*(1.0-c.a);
         //f_color = c*c.a + f_color*(1-c.a);
-    }
-
-    if(draw_control_net == 1)
-    {
-        vec4 c0 = texture(control_net_buffer, viewport_coord);
-        vec4 c = semi(f_color);
-        c.a = c0.a;
-        float al = c.a;
-        //f_color = semi(f_color)*al +  f_color*(1.0-al);//semi(f_color)*c.a + f_color*(1.0-c.a);
-        f_color = c*al + f_color*(1.0-al);
     }
 
     if(draw_nodes == 1) {

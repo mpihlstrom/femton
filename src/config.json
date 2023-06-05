@@ -5,8 +5,8 @@
 "surface" : true,
 "gaussian" : true,
 "painting" : true,
-"nodes" : false,
-"edges" : false,
+"nodes" : true,
+"edges" : true,
 "control net" : false,
 
 
