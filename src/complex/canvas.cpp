@@ -335,7 +335,7 @@ bool Complex::automata()
             auto vv = exp(-(mmid - pn).dot()*0.00001);
 
             auto v3 = (pn - e->n->p()).unit0() *  com->ev_quant * 2.2;
-            auto v4 = (pn - e->n->p()).unit0() * com->ev_quant * 2.2;
+            auto v4 = (mmid - e->n->p()).unit0() * com->ev_quant * 2.2;
             Vec2 v = v0 - v3*(1-vv) + v4*vv;
             v *= 0.56;
 
