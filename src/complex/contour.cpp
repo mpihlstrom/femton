@@ -139,3 +139,5 @@ void Complex::create_contours() {
         }
     }
 }
+
+Tri* Contour::t() { return cntr[0]->t; }

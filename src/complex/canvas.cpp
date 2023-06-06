@@ -220,7 +220,7 @@ bool Complex::automata()
 
             int ngh = 4;
             //int ngh2 = fmax(cntr.sz()*0.35, ngh*4);
-            int ngh2 = 28;
+            int ngh2 = 30;
             //myDebug() << ngh2;
 
             Vec2 mid;
@@ -236,10 +236,17 @@ bool Complex::automata()
                 auto vn2b = cntr[i-k-0]->v();
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
+                auto m_pn1_b = pn1 - e->t->cc->mid;
+                auto m_pn2_b = pn2 - e->t->cc->mid;
+                auto jm_pn1_a = pn1 - cntr[i+0]->j->t->cc->mid;
+                auto jm_pn2_a = pn2 - cntr[i-1]->j->t->cc->mid;
+                auto cc1 = 1.0 + (m_pn1_b.unit0() & jm_pn1_a.unit0())*1;
+                auto cc2 = 1.0 + (m_pn2_b.unit0() & jm_pn2_a.unit0())*1;
+
                 l1ws += (cntr[i+1+k]->n->p() - cntr[i+k]->n->p()).dot();
                 l2ws += (cntr[i-1-k]->n->p() - cntr[i-k]->n->p()).dot();
-                auto w1 = 1.0;// - (vn1a.unit0() ^ vn1b.unit0());//1.0;///(l1ws);//1.0/(p_pn1.dot()+1);//
-                auto w2 = 1.0;// - (vn2a.unit0() ^ vn2b.unit0());//1.0;///(l2ws);//1.0/(p_pn2.dot()+1);//
+                auto w1 = 1;// - (vn1a.unit0() ^ vn1b.unit0());//1.0;///(l1ws);//1.0/(p_pn1.dot()+1);//
+                auto w2 = 1;// - (vn2a.unit0() ^ vn2b.unit0());//1.0;///(l2ws);//1.0/(p_pn2.dot()+1);//
                 mid += pn1*w1 + pn2*w2;
                 midws += w1+w2;
             }
@@ -267,7 +274,7 @@ bool Complex::automata()
             //auto vnws = 0.0;
             double vnl2s1 = 0.0;
             double vnl2s2 = 0.0;
-            for(int k = 0; k < ngh; ++k) {              
+            for(int k = 0; k < ngh; ++k) {
                 auto pn1 = cntr[i+k]->n->p();
                 auto pn2 = cntr[i-k]->n->p();
 
@@ -296,8 +303,8 @@ bool Complex::automata()
                 auto cc1 = 1.0 + (m_pn1_b.unit0() & jm_pn1_a.unit0())*-1;
                 auto cc2 = 1.0 + (m_pn2_b.unit0() & jm_pn2_a.unit0())*-1;
 
-                auto pw1 = (1.0/(p_pn1.dot()+1)) * (m_pn1_a.dot()/vnl2s1) * cc1; // / jm_pn1_a.dot()
-                auto pw2 = (1.0/(p_pn2.dot()+1)) * (m_pn2_a.dot()/vnl2s2) * cc2; // / jm_pn2_a.dot()
+                auto pw1 = (m_pn1_a.dot()/(p_pn1.dot()+1)); //
+                auto pw2 = (m_pn2_a.dot()/(p_pn2.dot()+1)); //
                 pn += pn1*pw1 + pn2*pw2;
                 pws += pw1+pw2;
 
@@ -321,16 +328,15 @@ bool Complex::automata()
 
             auto p_emid = e->t->cc->mid - e->n->p();
             auto p_jmid = j->t->cc->mid - e->n->p();
-            //auto w = fmin(e->t->cc->area / e->t->cc->sur * p_mid.l2() * 0.1, 1);
-            const double C = 200;
-            auto we = fmin(e->t->cc->area / (com->ar_quant*C), 1);
-            auto wj = fmin(j->t->cc->area / (com->ar_quant*C), 1);
-            auto w = fmin(we, wj);
-            Vec2 p_mid = (we < wj)? p_emid : p_jmid;
+            auto emid = e->t->cc->mid;
+            auto jmid = j->t->cc->mid;
+            auto mmid = p_emid.dot() < p_jmid.dot()? e->t->cc->mid : j->t->cc->mid;
 
-            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2.5;//vn.l2();//
+            auto vv = exp(-(mmid - pn).dot()*0.00001);
 
-            Vec2 v = v0 - v3;//*fmax(fmin(we/wj,1),0.5);//v0 = v0.unit0() * com->ev_quant * 0.5;
+            auto v3 = (pn - e->n->p()).unit0() *  com->ev_quant * 2.2;
+            auto v4 = (pn - e->n->p()).unit0() * com->ev_quant * 2.2;
+            Vec2 v = v0 - v3*(1-vv) + v4*vv;
             v *= 0.56;
 
             //v = p_mid*0.16*(1.0-w) + v;

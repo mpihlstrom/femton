@@ -11,6 +11,7 @@ struct Edge;
 struct Contour {
     void add(Edge* e);
     Edge* operator[](int i);
+    Tri* t();
     int sz();
     int count();
     std::vector<Edge*> cntr;
