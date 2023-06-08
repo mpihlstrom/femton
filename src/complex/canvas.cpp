@@ -198,6 +198,26 @@ bool Complex::automata()
     color_to_line();
     create_contours();
 
+    /*
+    for(auto cntr_p : com->cntrs) {
+        Contour &cntr = *cntr_p;
+        int cnt_sz = cntr.count();
+
+        double curv_sum = 0.0;
+        for(int i = 0; i < cnt_sz; ++i) {
+            double curv = (1.0 + (cntr[i]->v().unit0() & cntr[i+1]->v().unit0())) * 0.5;
+            curv_sum += curv;
+        }
+        curv_sum /= cnt_sz;
+
+        for(int i = 0; i < cnt_sz; ++i) {
+            auto v = (cntr[i]->v() + cntr[i-1]->v()*-1)*0.5*(pow(curv_sum,0.5));
+            move(*cntr[i]->n, cntr[i]->n->cp + v);
+        }
+    }
+    */
+
+
     for(auto cntr_p : com->cntrs) {
         Contour &cntr = *cntr_p;
         int cnt_sz = cntr.count();
@@ -220,31 +240,14 @@ bool Complex::automata()
 
             int ngh = 4;
             //int ngh2 = fmax(cntr.sz()*0.35, ngh*4);
-            int ngh2 = 30;
+            int ngh2 = 40;
             //myDebug() << ngh2;
 
             Vec2 mid;
             auto midws = 0.0;
-            double l1ws = 0.0;
-            double l2ws = 0.0;
             for(int k = 0; k < fmin(cnt_sz, ngh2); ++k) {//cntr.sz()/4+1; ++k) {
                 auto pn1 = cntr[i+k]->n->p();
                 auto pn2 = cntr[i-k]->n->p();
-                auto vn1a = cntr[i+k-1]->v();
-                auto vn1b = cntr[i+k+0]->v();
-                auto vn2a = cntr[i-k-1]->v();
-                auto vn2b = cntr[i-k-0]->v();
-                auto p_pn1 = pn1 - e->n->p();
-                auto p_pn2 = pn2 - e->n->p();
-                auto m_pn1_b = pn1 - e->t->cc->mid;
-                auto m_pn2_b = pn2 - e->t->cc->mid;
-                auto jm_pn1_a = pn1 - cntr[i+0]->j->t->cc->mid;
-                auto jm_pn2_a = pn2 - cntr[i-1]->j->t->cc->mid;
-                auto cc1 = 1.0 + (m_pn1_b.unit0() & jm_pn1_a.unit0())*1;
-                auto cc2 = 1.0 + (m_pn2_b.unit0() & jm_pn2_a.unit0())*1;
-
-                l1ws += (cntr[i+1+k]->n->p() - cntr[i+k]->n->p()).dot();
-                l2ws += (cntr[i-1-k]->n->p() - cntr[i-k]->n->p()).dot();
                 auto w1 = 1;// - (vn1a.unit0() ^ vn1b.unit0());//1.0;///(l1ws);//1.0/(p_pn1.dot()+1);//
                 auto w2 = 1;// - (vn2a.unit0() ^ vn2b.unit0());//1.0;///(l2ws);//1.0/(p_pn2.dot()+1);//
                 mid += pn1*w1 + pn2*w2;
@@ -270,53 +273,20 @@ bool Complex::automata()
 
             Vec2 pn;
             auto pws = 0.0;
-            //Vec2 vn;
-            //auto vnws = 0.0;
-            double vnl2s1 = 0.0;
-            double vnl2s2 = 0.0;
             for(int k = 0; k < ngh; ++k) {
                 auto pn1 = cntr[i+k]->n->p();
                 auto pn2 = cntr[i-k]->n->p();
-
-                vnl2s1 += (cntr[i+1+k]->n->p() - cntr[i+k]->n->p()).dot();
-                vnl2s2 += (cntr[i-1-k]->n->p() - cntr[i-k]->n->p()).dot();
 
                 auto p_pn1 = pn1 - e->n->p();
                 auto p_pn2 = pn2 - e->n->p();
                 auto m_pn1_a = pn1 - mid;//e->t->cc->mid;//
                 auto m_pn2_a = pn2 - mid;//e->t->cc->mid;//
-                auto m_pn1_b = pn1 - e->t->cc->mid;
-                auto m_pn2_b = pn2 - e->t->cc->mid;
                 if(cntr[i+k+0]->j->t->cc == nullptr || cntr[i-k-1]->j->t->cc == nullptr) continue;
-                auto jm_pn1_a = pn1 - cntr[i+0]->j->t->cc->mid;
-                auto jm_pn2_a = pn2 - cntr[i-1]->j->t->cc->mid;
-                auto jm_pn1_b = pn1 - cntr[i+k+0]->j->t->cc->mid;
-                auto jm_pn2_b = pn2 - cntr[i-k-1]->j->t->cc->mid;
-                auto jm_pn1_c = pn1 - midj1;
-                auto jm_pn2_c = pn2 - midj2;
 
-                auto vn1a = cntr[i+k-1]->v();
-                auto vn1b = cntr[i+k+0]->v();
-                auto vn2a = cntr[i-k-1]->v();
-                auto vn2b = cntr[i-k-0]->v();
-
-                auto cc1 = 1.0 + (m_pn1_b.unit0() & jm_pn1_a.unit0())*-1;
-                auto cc2 = 1.0 + (m_pn2_b.unit0() & jm_pn2_a.unit0())*-1;
-
-                auto pw1 = (m_pn1_a.dot()/(p_pn1.dot()+1)); //
-                auto pw2 = (m_pn2_a.dot()/(p_pn2.dot()+1)); //
+                auto pw1 = (m_pn1_a.dot()/(p_pn1.dot()+1));
+                auto pw2 = (m_pn2_a.dot()/(p_pn2.dot()+1));
                 pn += pn1*pw1 + pn2*pw2;
                 pws += pw1+pw2;
-
-               /*auto vn1 = cc->cntr(i+k)->v();
-                auto vn2 = cc->cntr(i-k-1)->v() * -1;
-                auto vnw1 = abs(mm1.unit0() ^ cc->cntr(i+k)->v().unit0())   / (ppn1.dot() + 1.0);
-                auto vnw2 = abs(mm2.unit0() ^ cc->cntr(i-k-1)->v().unit0()) / (ppn2.dot() + 1.0);
-                auto vnw1 = pw1;
-                auto vnw2 = pw2;
-                vn += p_pn1 * vnw1;
-                vn += p_pn2 * vnw2;
-                vnws += vnw1 + vnw2;*/
             }
 
             if(pws <= 0) {
@@ -330,14 +300,16 @@ bool Complex::automata()
             auto p_jmid = j->t->cc->mid - e->n->p();
             auto emid = e->t->cc->mid;
             auto jmid = j->t->cc->mid;
-            auto mmid = p_emid.dot() < p_jmid.dot()? e->t->cc->mid : j->t->cc->mid;
 
-            auto vv = exp(-(mmid - pn).dot()*0.00001);
+            auto midw = fmin(p_jmid.dot() / (p_jmid.dot()+p_emid.dot()), 1);
+            auto mmid = emid*midw + jmid*(1-midw);
+            //mmid = p_emid.dot() < p_jmid.dot()? e->t->cc->mid : j->t->cc->mid;
 
-            auto v3 = (pn - e->n->p()).unit0() *  com->ev_quant * 2.2;
-            auto v4 = (mmid - e->n->p()).unit0() * com->ev_quant * 2.2;
-            Vec2 v = v0 - v3*(1-vv) + v4*vv;
-            v *= 0.56;
+            auto vv = 1 - 2*exp(-(mmid - pn).dot()*0.00005);
+
+            auto v3 = (pn - e->n->p()).unit0() * com->ev_quant * 2.2;
+            Vec2 v = v0 - v3;//*vv;
+            v *= 0.6;
 
             //v = p_mid*0.16*(1.0-w) + v;
 
@@ -345,6 +317,7 @@ bool Complex::automata()
 
         }
     }
+
 
     /*
     for(auto cntr_p : com->cntrs) {
@@ -398,18 +371,18 @@ bool Complex::automata()
     move_nodes();
     color_to_line();
 
-    for(auto cntr_p : com->cntrs) {
+    /*for(auto cntr_p : com->cntrs) {
         Contour &cntr = *cntr_p;
         for(int i = 0; i < cntr.count(); ++i) {
             Edge* e = cntr[i];
-            if(e->t->cc->area < com->ar_quant*15 && e->v().l2() < com->ev_quant*15) {
+            if(e->t->cc->area < com->ar_quant && e->v().l2() < com->ev_quant) {
                 merge(e);
                 break;
             }
         }
     }
     move_nodes();
-
+    */
     color_to_line();
 
     delaunify();
