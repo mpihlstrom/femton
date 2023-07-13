@@ -10,6 +10,8 @@ For the realization of a manipulable triangulation it is necessary to handle the
 
 ![cont75](https://user-images.githubusercontent.com/2462565/180953154-375f94bf-dfca-49aa-b097-31e57d9819e1.gif) ![cont75both](https://user-images.githubusercontent.com/2462565/180953164-a614ba30-fb1b-4e7e-b2eb-b6fb5609bc44.gif) ![cont75wf](https://user-images.githubusercontent.com/2462565/180953175-476c719b-8ac9-4fbd-85ae-6f996fd691f0.gif)
 
+*Femton* means fifteen in Swedish. This ~~arbitrary~~ number was chosen as a play on the self-referential *interesting number paradox* and as a statement about the nature of (pseudo-)aleatoric expression. Incidentally, this word is related to the scientific prefix *femto-* (10e-15), linking the name to the notion of miniscule quanta, a recurring theme of the project.
+
 ## Introduction
 
 ### Contour and the principle of visual retention
