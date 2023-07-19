@@ -10,7 +10,7 @@ For the realization of a manipulable triangulation, it is necessary to handle th
 
 ![cont75](https://user-images.githubusercontent.com/2462565/180953154-375f94bf-dfca-49aa-b097-31e57d9819e1.gif) ![cont75both](https://user-images.githubusercontent.com/2462565/180953164-a614ba30-fb1b-4e7e-b2eb-b6fb5609bc44.gif) ![cont75wf](https://user-images.githubusercontent.com/2462565/180953175-476c719b-8ac9-4fbd-85ae-6f996fd691f0.gif)
 
-*Femton* means fifteen in Swedish. The choice of this number plays on the impossibility of the arbitrary undertaking and what would appear to imply some significance behind everything, and any name. Incidentally, the word is related to the scientific prefix *femto-* (10e-15), linking the name to the notion of miniscule quanta, a recurring theme in this project.
+*Femton* means fifteen in Swedish. The choice of this number plays on the impossibility of the arbitrary undertaking and what would appear to imply some significance behind everything, and any naming. Incidentally, the word is related to the scientific prefix *femto-* (10e-15), linking the name to the notion of miniscule quanta, a recurring theme in this project.
 
 ## Introduction
 
