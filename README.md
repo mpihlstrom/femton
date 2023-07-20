@@ -16,7 +16,7 @@ For the realization of a manipulable triangulation, it is necessary to handle th
 
 ### Contour and the principle of visual retention
 
-A 2D triangulation can be seen a mosaic of non-overlapping triangles covering some space. When the triangles are colored and insofar adjacent triangles share the same color, this space can also be seen as a jigsaw puzzle of polygon shapes. Importantly, then, the exterior of a polygon is at the same time the joint interior of the other polygons, and so the entire space of shapes is connected. Modification to a shape is therefore just as much modification to the negative space surrounding it.
+A 2D triangulation can be seen a mosaic of non-overlapping triangles covering some space. When the triangles are colored and insofar adjacent triangles share the same color, this space can also be seen as a jigsaw puzzle of polygon shapes. Importantly, then, the exterior of a polygon is at the same time the joint interior of the other polygons, and so the entire space of shapes is connected. Modification to a shape is just as much modification to the negative space surrounding it.
 
 Contour can be defined as the boundary between polygons, or, as a path of edges where triangles have the same color along either side of the path but distinct color across the path. Contour is a helpful concept because, in some regard, it is the element of visual information and because as a delimiter of representation it establishes, among other things, something like adaptive resolution: only regions with contour need to be constituted by small edges, where the level of detail is ultimately limited by the smallest edge length.
 
