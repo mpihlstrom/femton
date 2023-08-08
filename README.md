@@ -88,8 +88,6 @@ One should bear in mind that shading techniques amount to post-processing on ras
 
 https://github.com/mpihlstrom/femton/assets/2462565/33804091-ea47-4d4d-a285-586634ba290c
 
-https://user-images.githubusercontent.com/2462565/176846043-6d02d548-be18-4a62-948f-526be59c24ca.mp4
-
 https://user-images.githubusercontent.com/2462565/176846064-b3ab8c08-fae3-498d-9f98-2a06512b5dd5.mp4
 
 ### Technical exposition
