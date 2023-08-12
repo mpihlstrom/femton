@@ -381,7 +381,7 @@ $$
  D_\vec{ab} - 0 \\
  E_\vec{ab} - 0 \\
  F_\vec{ab} - 0 \\
-\end{bmatrix} \diamond 0 =
+\end{bmatrix} \diamond 0 = 0
 $$
 
 and that we can make use of the calculus from the preceding section by realizing that simply $D_\Delta = D'$, $E_\Delta = E'$ and $F_\Delta = F'$.
